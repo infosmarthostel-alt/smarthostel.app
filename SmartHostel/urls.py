@@ -8,6 +8,7 @@ from payment import views as pv
 
 urlpatterns = [
     path('',mv.index,name='home'),
+    path('health',mv.health_check,name='home'),
     path('register', sv.student_register, name='student_register'),
     path('login_post', mv.login_post, name="login_post"),
     path('login_return', mv.login_return, name="login_return"),
