@@ -1,0 +1,203 @@
+{% extends "home.html" %}
+
+{% block content %}
+
+{% load static %}
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+  <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B700%3B900">
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <style>
+    :root{
+      --bg: #ffffff;
+      --muted: #617589;
+      --text: #111418;
+      --border: #dbe0e6;
+      --surface: #f0f2f4;
+      --accent: #111418;
+      --radius-xl: 12px;
+      --container-padding-x: 40px;
+      --max-width: 960px;
+      font-family: "Public Sans","Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;height:auto;display:block}
+
+    /* Header */
+    .site-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px var(--container-padding-x);
+      border-bottom:1px solid var(--border);
+      background:transparent;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand svg{width:36px;height:36px}
+    .brand h1{font-size:18px;margin:0;font-weight:700}
+
+    .header-right{display:flex;align-items:center;gap:20px}
+    .top-links{display:flex;gap:16px;align-items:center}
+    .top-links a{font-size:14px;font-weight:500;color:var(--text)}
+    .btn-logout{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 14px;border-radius:12px;background:var(--surface);font-weight:700}
+
+    /* Page container */
+    .page-wrap{padding:20px var(--container-padding-x);display:flex;justify-content:center}
+    .container{max-width:var(--max-width);width:100%}
+
+    /* Page header */
+    .page-title{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+    .page-title h2{font-size:28px;margin:0;font-weight:700}
+
+    /* Messages */
+    .msg{margin:8px 0;padding:10px 12px;border-radius:8px;border:1px solid transparent}
+    .msg-success{color: #14532d;background: #ecfdf5;border-color: #bbf7d0}
+    .msg-error{color: #7f1d1d;background: #fff1f2;border-color:#fecaca}
+
+    /* Profile box */
+    .profile-card{
+      display:flex;
+      gap:24px;
+      padding:18px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background: #fff;
+      align-items:flex-start;
+      margin-bottom:18px;
+    }
+    .profile-pic{
+      width:150px;
+      height:150px;
+      border-radius:12px;
+      background-size:cover;
+      background-position:center;
+      flex-shrink:0;
+      border:1px solid var(--border);
+    }
+    .profile-meta{flex:1;min-width:0}
+    .profile-meta h3{margin:0 0 6px 0;font-size:20px}
+    .profile-meta p{margin:4px 0;color:var(--muted)}
+
+    /* Table */
+    .profile-table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:12px;
+      font-size:15px;
+    }
+    .profile-table th,
+    .profile-table td{
+      text-align:left;
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      vertical-align:middle;
+    }
+    .profile-table th{
+      width:220px;
+      color:var(--muted);
+      font-weight:600;
+      background:transparent;
+    }
+
+    /* Links row */
+    .actions{margin-top:16px}
+    .actions a{margin-right:12px;font-weight:600;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid transparent}
+    .actions a.edit{background:transparent;border-color:transparent}
+    .actions a.pw{background:var(--surface)}
+
+    /* Responsive */
+    @media (max-width:780px){
+      .profile-card{flex-direction:column;align-items:center;text-align:center}
+      .profile-card .profile-meta{text-align:center}
+      .profile-table th{width:140px}
+      .page-wrap{padding:12px}
+      .site-header{padding:12px}
+    }
+  </style>
+</head>
+  <div class="page-wrap">
+    <main class="container" role="main">
+      <div class="page-title">
+        <h2>My Profile</h2>
+      </div>
+
+      {% if messages %}
+        {% for msg in messages %}
+          <p class="{% if msg.tags == 'error' %}msg msg-error{% else %}msg msg-success{% endif %}">
+            {{ msg }}
+          </p>
+        {% endfor %}
+      {% endif %}
+
+      <div class="profile-card">
+        <div>
+          {% if student.profile_pic %}
+            <div class="profile-pic" style="background-image:url('{{ student.profile_pic.url }}');" role="img" aria-label="Profile picture"></div>
+          {% else %}
+            <div class="profile-pic" style="display:flex;align-items:center;justify-content:center;background:#f8fafc;color:var(--muted)">
+              No image
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="profile-meta">
+          <h3>{{ student.name }}</h3>
+          <p>Student ID: {{ student.student_id }}</p>
+          <p>Email: {{ student.email }}</p>
+          <p>Phone: {{ student.phone }}</p>
+        </div>
+      </div>
+
+      <table class="profile-table" role="table" aria-label="Student details">
+        <tbody>
+          <tr><th scope="row">Name</th><td>{{ student.name }}</td></tr>
+          <tr><th scope="row">Student ID</th><td>{{ student.student_id }}</td></tr>
+          <tr><th scope="row">Age</th><td>{{ student.age }}</td></tr>
+          <tr><th scope="row">Gender</th><td>{{ student.gender }}</td></tr>
+          <tr><th scope="row">Phone</th><td>{{ student.phone }}</td></tr>
+          <tr><th scope="row">Email</th><td>{{ student.email }}</td></tr>
+
+          <tr><th scope="row">Parent Name</th><td>{{ student.parent_name }}</td></tr>
+          <tr><th scope="row">Parent Phone</th><td>{{ student.parent_phone }}</td></tr>
+          <tr><th scope="row">Parent Email</th><td>{{ student.parent_email }}</td></tr>
+
+          <tr><th scope="row">District</th><td>{{ student.district }}</td></tr>
+          <tr><th scope="row">Pincode</th><td>{{ student.pincode }}</td></tr>
+          <tr><th scope="row">Joined Date</th><td>{{ student.joined_date }}</td></tr>
+
+          <tr>
+            <th scope="row">Room</th>
+            <td>
+              {% if student.room %}
+                {{ student.room }}
+              {% else %}
+                Not assigned
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <th scope="row">ID Proof</th>
+            <td>
+              {% if student.id_proof %}
+                <a href="{{ student.id_proof.url }}" target="_blank">View ID Proof</a>
+              {% else %}
+                Not uploaded
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="actions">
+        <a class="edit" href="{% url 'profile_edit' %}">Edit Profile</a>
+        <a class="pw" href="{% url 'profile_change_password' %}">Change Password</a>
+      </div>
+    </main>
+  </div>
+
+{% endblock %}

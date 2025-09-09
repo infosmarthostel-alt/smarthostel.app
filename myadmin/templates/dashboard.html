@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Hostel Admin Dashboard</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+    <style>
+      :root{
+        --bg: #ffffff;
+        --muted: #617589;
+        --text: #0f172a;
+        --border: #e6e9ef;
+        --surface: #f6f8fb;
+        --accent: #0f172a;
+        --radius-xl: 14px;
+        --gap: 16px;
+        --max-width: 1100px;
+        --container-padding-x: 20px;
+        font-family: "Public Sans", "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      }
+
+      *{box-sizing:border-box}
+      html,body{height:100%;margin:0;background:#f5f6fb;color:var(--text)}
+      a{text-decoration:none;color:inherit}
+
+      /* layout */
+      .layout-container{display:flex;flex-direction:column;min-height:100vh}
+      header{display:flex;align-items:center;justify-content:space-between;padding:12px 40px;border-bottom:1px solid var(--border);background:white}
+      header .brand{display:flex;align-items:center;gap:10px}
+      header h2{font-size:18px;margin:0;font-weight:700}
+      .right{display:flex;align-items:center;gap:16px}
+      .nav-links{display:flex;gap:12px;align-items:center}
+      .nav-links a{font-size:14px;padding:8px 10px;border-radius:8px;color:var(--text);background:transparent}
+      .btn-logout{display:inline-flex;align-items:center;justify-content:center;min-width:84px;height:40px;padding:0 16px;border-radius:10px;background:var(--surface);font-weight:700}
+      .avatar{width:40px;height:40px;border-radius:999px;background-size:cover;background-position:center;flex-shrink:0}
+
+      .container{padding:20px var(--container-padding-x);max-width:var(--max-width);margin:0 auto}
+      .top-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+      .title{font-size:28px;font-weight:700;margin:8px 0}
+
+      .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+      .card{background:white;padding:18px;border-radius:12px;border:1px solid var(--border)}
+      .card h3{margin:0 0 8px 0;font-size:14px;color:var(--muted)}
+      .card .value{font-size:22px;font-weight:700}
+
+      /* admin quick panel */
+      .quick-panel{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0}
+      .quick-panel a.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;background:var(--accent);color:white}
+
+      /* info grid similar to student view */
+      .hostel-grid{background:white;border-radius:12px;padding:12px;border:1px solid var(--border);margin-top:18px}
+      .info-row{display:grid;grid-template-columns:220px 1fr;padding:14px 12px;border-top:1px solid var(--border);align-items:center}
+      .info-row:first-of-type{border-top:none}
+      .info-label{color:var(--muted);font-size:14px}
+      .info-value{font-size:14px}
+
+      .announcement{display:flex;gap:16px;align-items:stretch;margin-top:16px}
+      .announcement .card-text{flex:2}
+      .announcement .card-media{flex:1;border-radius:10px;background-size:cover;background-position:center;height:100px}
+
+      /* tabs */
+      .tabs{display:flex;gap:24px;border-bottom:1px solid var(--border);padding:10px 0}
+      .tab-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 6px;border-bottom:3px solid transparent;cursor:pointer}
+      .tab-btn .label{font-size:13px;font-weight:700;color:var(--muted)}
+      .tab-btn.active{border-bottom-color:var(--accent)}
+      .tab-btn.active .label{color:var(--accent)}
+      .tab-panels{padding:12px}
+      .tab-panel{display:none}
+      .tab-panel.active{display:block}
+      .msg{margin:8px 0;padding:10px 12px;border-radius:8px;border:1px solid transparent}
+      .msg-success{color:#14532d;background:#ecfdf5;border-color:#bbf7d0}
+      .msg-error{color:#7f1d1d;background:#fff1f2;border-color:#fecaca}
+
+      @media (max-width:900px){
+        header{padding:12px 16px}
+        .cards{grid-template-columns:repeat(1,1fr)}
+        .info-row{grid-template-columns:1fr}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout-container">
+      <header>
+        <div class="brand">
+          <svg viewBox="0 -6.83 55.484 55.484" xmlns="http://www.w3.org/2000/svg">
+
+            <g transform="translate(-819.325 -209.09)">
+            
+            <path d="M830.341,217.538a19.3,19.3,0,0,0-4.606,12.57,19.006,19.006,0,0,0,14.6,18.648" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <path d="M833.052,246.26a5.987,5.987,0,0,1,3.847,1.94.246.246,0,0,1,0,.335,4.866,4.866,0,0,1-7.725-.067.247.247,0,0,1,0-.336A5.979,5.979,0,0,1,833.052,246.26Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <path d="M826.455,239.3a6.123,6.123,0,0,1,2.948,3.19.244.244,0,0,1-.116.314,5.9,5.9,0,0,1-4.272.373,6.127,6.127,0,0,1-2.948-3.19.245.245,0,0,1,.117-.314A5.9,5.9,0,0,1,826.455,239.3Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <path d="M824.232,230.16a6.239,6.239,0,0,1,1.955,3.909.241.241,0,0,1-.2.268,5.905,5.905,0,0,1-4.2-.871,6.242,6.242,0,0,1-1.955-3.91.242.242,0,0,1,.2-.268A5.907,5.907,0,0,1,824.232,230.16Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <path d="M826.109,220.822a6.322,6.322,0,0,1,.1,4.392.236.236,0,0,1-.292.153,6.046,6.046,0,0,1-3.416-2.655,6.322,6.322,0,0,1-.1-4.392.236.236,0,0,1,.292-.153A6.046,6.046,0,0,1,826.109,220.822Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <path d="M833.948,214.106a6.091,6.091,0,0,1-3.1,3.037.234.234,0,0,1-.307-.118,6.317,6.317,0,0,1-.386-4.375,6.085,6.085,0,0,1,3.1-3.037.233.233,0,0,1,.307.118A6.31,6.31,0,0,1,833.948,214.106Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <path d="M863.793,217.538a19.3,19.3,0,0,1,4.606,12.57,19.006,19.006,0,0,1-14.6,18.648" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <path d="M861.082,246.26a5.987,5.987,0,0,0-3.847,1.94.246.246,0,0,0,0,.335,4.866,4.866,0,0,0,7.725-.067.246.246,0,0,0,0-.336A5.974,5.974,0,0,0,861.082,246.26Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <path d="M867.678,239.3a6.125,6.125,0,0,0-2.947,3.19.244.244,0,0,0,.116.314,5.9,5.9,0,0,0,4.272.373,6.127,6.127,0,0,0,2.948-3.19.245.245,0,0,0-.117-.314A5.9,5.9,0,0,0,867.678,239.3Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <path d="M869.9,230.16a6.239,6.239,0,0,0-1.955,3.909.241.241,0,0,0,.2.268,5.9,5.9,0,0,0,4.2-.871,6.241,6.241,0,0,0,1.955-3.91.242.242,0,0,0-.2-.268A5.907,5.907,0,0,0,869.9,230.16Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <path d="M868.025,220.822a6.322,6.322,0,0,0-.1,4.392.236.236,0,0,0,.292.153,6.046,6.046,0,0,0,3.416-2.655,6.322,6.322,0,0,0,.1-4.392.236.236,0,0,0-.292-.153A6.042,6.042,0,0,0,868.025,220.822Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <path d="M860.186,214.106a6.091,6.091,0,0,0,3.1,3.037.234.234,0,0,0,.307-.118,6.317,6.317,0,0,0,.386-4.375,6.086,6.086,0,0,0-3.1-3.037.233.233,0,0,0-.307.118A6.311,6.311,0,0,0,860.186,214.106Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <path d="M847.238,218.546l-9.83,10.137c-.1.1.069.236.069.378v10.352c0,.3-.208.947.088.947h19.56c.3,0,.352-.651.352-.947V229.061c0-.142.036-.277-.064-.378l-10.007-10.137C847.2,218.335,847.447,218.335,847.238,218.546Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            
+            <rect width="6" height="7" rx="0.547" transform="translate(844.477 232.36)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            
+            <line y1="12.336" x2="12.564" transform="translate(834.674 218.546)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            
+            <line x1="12.564" y1="12.336" transform="translate(847.301 218.546)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            
+            </g>
+            
+            </svg><h2>Hostel Admin</h2>
+        </div>
+
+        <div class="right">
+          <nav class="nav-links" aria-label="admin links">
+            <a href="{% url 'dashboard' %}">Home</a>
+            <a href="{% url 'students_list' %}">Students</a>
+            <a href="{% url 'rooms_list' %}">Rooms</a>
+            <a href="{% url 'pending_fees' %}">Pending Fees</a>
+            <a href="{% url 'admin_meals_list' %}">Add Meals</a>
+            <a href="{% url 'admin_notifications_list' %}">Add Notification</a>
+            <a href="{% url 'admin_complaints_list' %}">Complaints</a>
+            <a href="{% url 'export_students_csv' %}">Export CSV</a>
+          </nav>
+
+          <a href="{% url 'logout' %}"><div class="btn-logout" role="button">Logout</div></a>
+          <div class="avatar" style="background-image:url('/static/images/admin_avatar.png')" aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <main class="container">
+        {% block content %}
+        <div class="top-row">
+          <div>
+            <p class="title">Admin Dashboard</p>
+            <p style="color:var(--muted);margin:6px 0 0 0">Overview of hostel operations</p>
+          </div>
+
+          
+        </div>
+
+        {% if messages %}{% for msg in messages %}<p class="{% if msg.tags == 'error' %}msg msg-error{% else %}msg msg-success{% endif %}">{{ msg }}</p>{% endfor %}{% endif %}
+
+        <div class="cards" role="list">
+          <div class="card" role="listitem">
+            <h3>This month revenue</h3>
+            <div class="value">₹{{ revenue_month }}</div>
+          </div>
+
+          <div class="card" role="listitem">
+            <h3>Total revenue</h3>
+            <div class="value">₹{{ total_revenue }}</div>
+          </div>
+
+          <div class="card" role="listitem">
+            <h3>Total students</h3>
+            <div class="value">{{ total_students }}</div>
+          </div>
+
+          <div class="card" role="listitem">
+            <h3>Blocked students</h3>
+            <div class="value">{{ blocked_students }}</div>
+          </div>
+
+          <div class="card" role="listitem">
+            <h3>Occupied rooms</h3>
+            <div class="value">{{ occupied_rooms }}</div>
+          </div>
+
+          <div class="card" role="listitem">
+            <h3>Pending fees this month</h3>
+            <div class="value">{{ unpaid_count }}</div>
+          </div>
+        </div>
+
+        <!-- Info grid (Hostel info / quick stats) -->
+        <div class="hostel-grid">
+          <div class="info-row">
+            <div class="info-label">Admin Contact</div>
+            <div class="info-value">+91 79022 13947</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Notifications</div>
+            <div class="info-value">You have {{ unread_notifications|default:0 }} unread notifications</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Active Sessions</div>
+            <div class="info-value">{{ active_sessions|default:'—' }}</div>
+          </div>
+        </div>
+
+        <!-- Announcement -->
+        <div class="announcement">
+          <div class="card-text">
+            <p style="margin:0;font-weight:700">Latest Announcement</p>
+            <p style="margin:6px 0 0 0;color:var(--muted)">Check system alerts, maintenance windows and important notices for students and staff.</p>
+          </div>
+          <div class="card-media" style="background-image:url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=60');"></div>
+        </div>
+
+        <!-- Quick tabs for admin actions -->
+        <div style="margin-top:18px">
+          <div class="tabs" role="tablist" aria-label="Admin quick tabs">
+            <div class="tab-btn active" role="tab" tabindex="0" aria-selected="true" data-tab-target="overview">
+              <div class="label">Overview</div>
+            </div>
+            <div class="tab-btn" role="tab" tabindex="0" aria-selected="false" data-tab-target="students">
+              <div class="label">Students</div>
+            </div>
+            <div class="tab-btn" role="tab" tabindex="0" aria-selected="false" data-tab-target="rooms">
+              <div class="label">Rooms</div>
+            </div>
+            <div class="tab-btn" role="tab" tabindex="0" aria-selected="false" data-tab-target="reports">
+              <div class="label">Reports</div>
+            </div>
+          </div>
+
+          <div class="tab-panels">
+            <div id="overview" class="tab-panel active">
+              <strong>Overview</strong>
+              <p style="color:var(--muted)">Quick snapshots and recent activity.</p>
+            </div>
+
+            <div id="students" class="tab-panel">
+              <strong>Students</strong>
+              <p style="color:var(--muted)">Go to Manage Students to view, edit or export student records.</p>
+            </div>
+
+            <div id="rooms" class="tab-panel">
+              <strong>Rooms</strong>
+              <p style="color:var(--muted)">Room occupancy, types and maintenance status. Use Rooms link above to manage.</p>
+            </div>
+
+            <div id="reports" class="tab-panel">
+              <strong>Reports</strong>
+              <p style="color:var(--muted)">Generate revenue, occupancy and fee reports. Export CSV available above.</p>
+            </div>
+          </div>
+        </div>
+        
+{% endblock content %}
+      </main>
+    </div>
+
+    <script>
+      // Tab switching — same accessible behaviour as student UI
+      (function(){
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        function activate(targetId){
+          tabButtons.forEach(b=>{
+            const isActive = b.dataset.tabTarget === targetId;
+            b.classList.toggle('active', isActive);
+            b.setAttribute('aria-selected', String(isActive));
+            if(isActive) b.focus({preventScroll:true});
+          });
+          panels.forEach(p=> p.classList.toggle('active', p.id === targetId));
+        }
+
+        tabButtons.forEach(btn=>{
+          btn.addEventListener('click', ()=> activate(btn.dataset.tabTarget));
+          btn.addEventListener('keydown', (e)=>{
+            if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); activate(btn.dataset.tabTarget); }
+            if(e.key === 'ArrowRight' || e.key === 'ArrowLeft'){
+              e.preventDefault();
+              const nodes = Array.from(tabButtons);
+              const idx = nodes.indexOf(btn);
+              const nextIdx = e.key === 'ArrowRight' ? (idx+1)%nodes.length : (idx-1+nodes.length)%nodes.length;
+              nodes[nextIdx].click();
+            }
+          });
+        });
+
+        if(tabButtons.length){
+          const initial = document.querySelector('.tab-btn.active') || tabButtons[0];
+          activate(initial.dataset.tabTarget);
+        }
+      })();
+    </script>
+  </body>
+</html>

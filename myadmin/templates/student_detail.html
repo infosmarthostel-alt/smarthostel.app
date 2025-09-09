@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Student detail</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+    <style>
+      :root{
+        --bg:#f5f6fb;--card:#fff;--muted:#617589;--text:#0f172a;--border:#e6e9ef;--accent:#0f172a;--radius:12px;--gap:12px;font-family:"Public Sans","Noto Sans",system-ui,Arial;
+      }
+      *{box-sizing:border-box}
+      body{margin:0;background:var(--bg);color:var(--text);font-family:inherit}
+      a{color:inherit}
+      .container{max-width:1100px;margin:20px auto;padding:18px}
+      .back{display:inline-block;margin-bottom:12px;background:var(--card);padding:8px 10px;border-radius:8px;border:1px solid var(--border);text-decoration:none}
+
+      .header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+      .avatar{width:72px;height:72px;border-radius:10px;background-size:cover;background-position:center;border:1px solid var(--border)}
+      .student-meta{display:flex;flex-direction:column}
+      .student-meta h1{margin:0;font-size:20px}
+      .meta-row{color:var(--muted);margin-top:6px}
+
+      .layout{display:grid;grid-template-columns:1fr 360px;gap:18px}
+
+      .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+      .card h3{margin:0 0 8px 0}
+      .info-grid{display:grid;grid-template-columns:140px 1fr;gap:8px;align-items:center}
+      .label{color:var(--muted);font-size:13px}
+      .value{font-size:14px}
+
+      .actions .form-row{display:flex;gap:8px;align-items:center;margin-top:8px}
+      select,input[type="text"],input[type="date"],input[type="number"]{padding:8px;border-radius:8px;border:1px solid var(--border);width:100%}
+      button{padding:8px 12px;border-radius:8px;border:0;background:var(--accent);color:white;cursor:pointer}
+      .muted{color:var(--muted)}
+
+      table{width:100%;border-collapse:collapse;margin-top:8px}
+      th,td{border:1px solid var(--border);padding:8px;text-align:left}
+      th{background:#fbfdff;font-weight:700}
+
+      .summary{display:flex;gap:12px;margin-top:12px}
+      .summary .card{flex:1}
+
+      .messages{list-style:none;padding:0;margin:8px 0}
+      .messages li{padding:8px;border-radius:8px;margin-bottom:6px}
+      .messages .success{background:#ecfdf3;border:1px solid #bbf7d0}
+      .messages .error{background:#fff1f2;border:1px solid #fecaca}
+
+      @media (max-width:940px){.layout{grid-template-columns:1fr}.avatar{width:56px;height:56px}}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a class="back" href="{% url 'students_list' %}"> Back to students</a>
+
+      {% if messages %}
+        <ul class="messages">
+          {% for m in messages %}
+            <li class="{{ m.tags }}">{{ m }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <div class="header">
+        <div class="avatar" style="background-image: url('{{ student.profile_pic.url|default:'/static/images/student_placeholder.png' }}')" aria-hidden="true"></div>
+        <div class="student-meta">
+          <h1>{{ student.name }} <span style="font-weight:400;color:var(--muted);font-size:13px">(ID: {{ student.student_id }})</span></h1>
+          <div class="meta-row">Programme: {{ student.get_programme_display }} · District: {{ student.district }}</div>
+          <div class="meta-row">Phone: {{ student.phone }} · Email: {{ student.email }}</div>
+        </div>
+      </div>
+
+      <div class="layout">
+        <!-- left column: details, transactions, fees -->
+        <div>
+          <div class="card">
+            <h3>Room</h3>
+            <div class="info-grid">
+              <div class="label">Assigned room</div>
+              <div class="value">
+                {% if student.room %}
+                  <a href="{% url 'room_detail' student.room.room_id %}">{{ student.room.block_number }} - {{ student.room.room_number }}</a>
+                {% else %}
+                  <span class="muted">Not assigned</span>
+                {% endif %}
+              </div>
+
+              <div class="label">Room rent</div>
+              <div class="value">{% if student.room %}₹{{ student.room.room_rent }}{% else %}—{% endif %}</div>
+
+              <div class="label">Capacity</div>
+              <div class="value">{% if student.room %}{{ student.room.occupied }}/{{ student.room.capacity }}{% else %}—{% endif %}</div>
+
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:14px">
+            <h3>Transactions</h3>
+            <table>
+              <thead>
+                <tr><th>ID</th><th>Amount</th><th>Status</th><th>Start</th><th>End</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                {% for t in transactions %}
+                  <tr>
+                    <td style="font-family: monospace;" >{{ t.tx_id }}</td>
+                    <td>₹{{ t.amount }}</td>
+                    <td>{{ t.status }}</td>
+                    <td>{{ t.start_date }}</td>
+                    <td>{{ t.end_date }}</td>
+                    <td>
+                      {% if t.status != 'success' %}
+                        <form method="post" action="{% url 'mark_tx_success' t.tx_id %}">
+                          {% csrf_token %}
+                          <button type="submit">Mark success</button>
+                        </form>
+                        {% else %}
+                        no actions needed
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="6">No transactions</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="summary">
+            <div class="card">
+              <h3>Fee Summary</h3>
+              <p class="muted">Pending: <strong>{{ pending_count }}</strong> (₹{{ pending_total }})</p>
+              <p class="muted">Overdue: <strong>{{ overdue_count }}</strong> (₹{{ overdue_total }})</p>
+            </div>
+
+            <div class="card">
+              <h3>Contact</h3>
+              <p class="muted">Student phone: {{ student.phone }}</p>
+              <p class="muted">Student email: {{ student.email }}</p>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:14px">
+            <h3>Fees</h3>
+            <table>
+              <thead>
+                <tr><th>Amount</th><th>Due</th><th>Status</th><th>Note</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                {% for f in fees %}
+                  <tr>
+                    <td>₹{{ f.amount }}</td>
+                    <td>{{ f.due_date }}</td>
+                    <td>{{ f.status }}</td>
+                    <td>{{ f.note }}</td>
+                    <td>
+                      {% if f.status != 'Paid' %}
+                        <form method="post" style="display:inline;">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="mark_fee_paid">
+                          <input type="hidden" name="fee_id" value="{{ f.fee_id }}">
+                          <button type="submit">Mark Paid</button>
+                        </form>
+                      {% else %}
+                        <span class="muted">Paid on {{ f.payment_date }}</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="5">No fees</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- right column: actions / assign room / create fee -->
+        <aside>
+          <div class="card actions">
+            <h3>Actions</h3>
+
+            <form method="post" action="" style="margin-top:8px">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="assign_room">
+              <label class="label">Assign room</label>
+              <div class="form-row">
+                <select name="room_id">
+                  <option value="">Select a room</option>
+                  {% for r in available_rooms %}
+                    <option value="{{ r.room_id }}">{{ r.block_number }} - {{ r.room_number }} ({{ r.occupied }}/{{ r.capacity }})</option>
+                  {% endfor %}
+                </select>
+                <button type="submit">Assign</button>
+              </div>
+            </form>
+
+            <form method="post" style="margin-top:12px">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="create_fee">
+              <label class="label">Create fee</label>
+              <div style="margin-top:8px">
+                <input name="amount" placeholder="Amount" type="number" min="0">
+              </div>
+              <label class="label">Due Date</label>
+              <div style="margin-top:8px">
+                <input name="due_date" placeholder="YYYY-MM-DD" type="date">
+              </div>
+              <div style="margin-top:8px">
+                <input name="note" placeholder="Note" type="text">
+              </div>
+              <div style="margin-top:10px">
+                <button type="submit">Create fee</button>
+              </div>
+            </form>
+
+            <div style="margin-top:12px">
+              <a href="{% url 'students_list' %}" class="back">Return to list</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </body>
+</html>

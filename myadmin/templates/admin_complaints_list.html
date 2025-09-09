@@ -1,0 +1,58 @@
+{% extends "dashboard.html" %}
+{% block content %}
+<div style="padding:20px 12px; max-width:1100px; margin:0 auto">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="background:#fff;border:1px solid #e6e9ee;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px">
+<h2 style="margin:0">All Complaints</h2>
+
+
+<form method="get" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+<input type="text" name="q" placeholder="search title/description/student" value="{{ request.GET.q }}" style="padding:8px;border-radius:8px;border:1px solid #e6e9ee;min-width:180px">
+<select name="status" style="padding:8px;border-radius:8px;border:1px solid #e6e9ee">
+<option value="">All statuses</option>
+{% for val,label in status_choices %}
+<option value="{{ val }}" {% if request.GET.status == val %}selected{% endif %}>{{ label }}</option>
+{% endfor %}
+</select>
+<button type="submit" style="padding:8px 12px;border-radius:8px;border:0;background:#1f1f1f;color:#fff">Filter</button>
+</form>
+
+
+<div style="overflow-x:auto;border-radius:8px">
+<table style="width:100%;border-collapse:collapse;min-width:860px">
+<thead>
+<tr style="text-align:left;border-bottom:1px solid #eef2f7">
+<th style="padding:10px 12px">ID</th>
+<th style="padding:10px 12px">Title</th>
+<th style="padding:10px 12px">Student</th>
+<th style="padding:10px 12px">Room</th>
+<th style="padding:10px 12px">Type</th>
+<th style="padding:10px 12px">Status</th>
+<th style="padding:10px 12px">Created</th>
+<th style="padding:10px 12px">Actions</th>
+</tr>
+</thead>
+<tbody>
+{% for c in complaints %}
+<tr style="border-bottom:1px solid #f5f7fa">
+<td style="padding:10px 12px"><a href="{% url 'admin_complaint_detail' c.pk %}" style="color:#0f62fe;text-decoration:none">{{ c.complaint_id }}</a></td>
+<td style="padding:10px 12px">{{ c.title }}</td>
+<td style="padding:10px 12px">{{ c.student.name }}</td>
+<td style="padding:10px 12px">{% if c.room %}{{ c.room.room_number }}{% else %}-{% endif %}</td>
+<td style="padding:10px 12px">{{ c.get_complaint_type_display }}</td>
+<td style="padding:10px 12px">
+<span style="font-size:12px;padding:6px 8px;border-radius:999px;display:inline-block;{% if c.status == 'pending' %}background:#fff7ed;color:#f59e0b;border:1px solid rgba(245,158,11,0.08);{% elif c.status == 'in_progress' %}background:#eef2ff;color:#0f62fe;border:1px solid rgba(15,98,254,0.06);{% else %}background:#f0fdf4;color:#10b981;border:1px solid rgba(16,185,129,0.06);{% endif %}">{{ c.get_status_display }}</span>
+</td>
+<td style="padding:10px 12px">{{ c.created_at|date:"SHORT_DATETIME_FORMAT" }}</td>
+<td style="padding:10px 12px"><a href="{% url 'admin_complaint_detail' c.complaint_id %}" style="color:#0f62fe;text-decoration:none">view</a></td>
+</tr>
+{% empty %}
+<tr><td colspan="8" style="padding:12px;text-align:center">No complaints found.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

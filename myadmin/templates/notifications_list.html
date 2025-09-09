@@ -1,0 +1,143 @@
+{% extends "dashboard.html" %}
+{% block content %}
+<style>
+  /* Notifications page specific styles (keeps visual parity with dashboard) */
+  .page-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; min-width: 980px; }
+  .page-head h1 { margin:0; font-size:22px; font-weight:700; }
+  .btn {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 12px; border-radius:10px; text-decoration:none;
+    font-weight:700; cursor:pointer;
+    background:var(--accent); color:white;
+  }
+  .btn.secondary {
+    background:transparent; border:1px solid var(--border); color:var(--text); font-weight:700;
+  }
+
+  .card.full {
+    background:white; padding:12px; border-radius:12px; border:1px solid var(--border);
+  }
+
+  .notifications-table {
+    width:100%; border-collapse:collapse; margin-top:8px;
+    font-size:14px;
+  }
+  .notifications-table thead th {
+    text-align:left; padding:10px 12px; color:var(--muted); font-weight:700; border-bottom:1px solid var(--border);
+  }
+  .notifications-table tbody td {
+    padding:12px; vertical-align:top; border-bottom:1px solid #f1f3f6;
+  }
+
+  .msg-preview { color:var(--muted); display:block; max-width:70ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  .badge {
+    display:inline-block; padding:6px 8px; border-radius:999px; font-weight:700; font-size:13px;
+  }
+  .badge.active { background:#e6ffef; color:#0a6b3a; border:1px solid #c8f1da; }
+  .badge.inactive { background:#fff6f6; color:#8a1b1b; border:1px solid #ffd6d6; }
+
+  .actions { display:flex; gap:8px; align-items:center; }
+  .actions a, .actions button { padding:8px 10px; border-radius:8px; text-decoration:none; border: none; cursor:pointer; background:transparent; color:var(--accent); font-weight:700; }
+  .actions form { display:inline; margin:0; }
+
+  .msg{margin:8px 0;padding:10px 12px;border-radius:8px;border:1px solid transparent}
+  .msg-success{color:#14532d;background:#ecfdf5;border-color:#bbf7d0}
+  .msg-error{color:#7f1d1d;background:#fff1f2;border-color:#fecaca}
+
+
+  /* responsive */
+  @media (max-width:900px){
+    .notifications-table thead { display:none; }
+    .notifications-table tbody td { display:block; padding:10px 0; }
+    .notifications-table tbody tr { border-bottom:1px dashed var(--border); padding:8px 0; }
+    .msg-preview { white-space:normal; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  }
+</style>
+
+<div class="page-head">
+  <div>
+    <h1>Notifications</h1>
+    <p style="color:var(--muted); margin:6px 0 0 0">Manage system announcements shown to students and staff.</p>
+  </div>
+
+  <div class="quick-panel" style="margin:0">
+    <a class="btn" href="{% url 'admin_add_notification' %}">&nbsp;+&nbsp;</a>
+  </div>
+
+
+</div>
+
+<div class="card full" role="region" aria-label="Notifications list">
+  {% if messages %}
+  {% for msg in messages %}
+    <p class="{% if msg.tags == 'error' %}msg msg-error{% else %}msg msg-success{% endif %}">{{ msg }}</p>
+  {% endfor %}
+{% endif %}
+  {% if notifications %}
+    <table class="notifications-table" role="table" aria-label="Notifications">
+      <thead>
+        <tr>
+          <th scope="col">Title</th>
+          <th scope="col">Message</th>
+          <th scope="col">Active</th>
+          <th scope="col">Created</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for n in notifications %}
+        <tr role="row" aria-rowindex="{{ forloop.counter }}">
+          <td role="cell" style="width:220px; font-weight:700;">{{ n.title }}</td>
+
+          <td role="cell">
+            <span class="msg-preview">{{ n.message|truncatewords:20 }}</span>
+          </td>
+
+          <td role="cell" style="white-space:nowrap;">
+            {% if n.is_active %}
+              <span class="badge active" aria-label="Active">Active</span>
+            {% else %}
+              <span class="badge inactive" aria-label="Inactive">Inactive</span>
+            {% endif %}
+          </td>
+
+          <td role="cell" style="white-space:nowrap;">{{ n.created_at|date:"Y-m-d H:i" }}</td>
+
+          <td role="cell">
+            <div class="actions" aria-hidden="false">
+              <a href="{% url 'admin_edit_notification' n.pk %}" class="btn secondary" title="Edit notification">Edit</a>
+
+              <form class="delete-notif" action="{% url 'admin_delete_notification' n.pk %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" title="Delete notification" aria-label="Delete notification" style="color:#b91c1c">Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div style="padding:24px;text-align:center">
+      <p style="font-weight:700;margin:0">No notifications yet</p>
+      <p style="color:var(--muted);margin:8px 0 16px 0">Create an announcement to inform students and staff.</p>
+      <a class="btn" href="{% url 'admin_add_notification' %}">+ Add your first notification</a>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  // Confirm delete (keeps markup simple and unobtrusive)
+  (function(){
+    document.querySelectorAll('form.delete-notif').forEach(function(form){
+      form.addEventListener('submit', function(e){
+        if(!confirm('Delete this notification? This action cannot be undone.')) {
+          e.preventDefault();
+        }
+      });
+    });
+  })();
+</script>
+{% endblock %}

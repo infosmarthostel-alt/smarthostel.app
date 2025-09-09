@@ -1,0 +1,95 @@
+{% extends "dashboard.html" %}
+{% block content %}
+<style>
+  .responsive-container {
+    padding: 10px 12px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 100%; /* default for mobile */
+  }
+  .msg{margin:8px 0;padding:10px 12px;border-radius:8px;border:1px solid transparent}
+    .msg-success{color:#14532d;background:#ecfdf5;border-color:#bbf7d0}
+    .msg-error{color:#7f1d1d;background:#fff1f2;border-color:#fecaca}
+
+  /* Tablet and up */
+  @media (min-width: 768px) {
+    .responsive-container {
+      max-width: 1260px;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .responsive-container {
+      width: 1000px;
+    }
+  }
+
+
+  /* Large desktop */
+  @media (min-width: 1440px) {
+    .responsive-container {
+      width: 1200px;
+    }
+  }
+</style>
+
+
+<div class="responsive-container" >
+  {% if messages %}
+        {% for msg in messages %}
+          <p class="{% if msg.tags == 'error' %}msg msg-error{% else %}msg msg-success{% endif %}">{{ msg }}</p>
+        {% endfor %}
+      {% endif %}
+<div style="background:#fff;border:1px solid #e6e9ee;border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(12,18,30,0.04)">
+<h2 style="margin:0 0 8px;font-size:20px">Complaint #{{ complaint.complaint_id }} — {{ complaint.title }}</h2>
+
+
+<div style="color:#6b7280;font-size:14px;margin:10px 0 14px">
+<div style="margin-bottom:10px"><strong>Student:</strong> {{ complaint.student.name }} ({{ complaint.student.phone }})</div>
+<div style="margin-bottom:10px"><strong>Room:</strong> {% if complaint.room %}{{ complaint.room.room_number }}{% else %}N/A{% endif %}</div>
+<div style="margin-bottom:10px"><strong>Type:</strong> {{ complaint.get_complaint_type_display }}</div>
+<div style="margin-bottom:10px"><strong>Status:</strong> <span style="font-size:13px;padding:6px 8px;border-radius:999px;{% if complaint.status == 'pending' %}background:#fff7ed;color:#f59e0b;border:1px solid rgba(245,158,11,0.08);{% elif complaint.status == 'in_progress' %}background:#eef2ff;color:#0f62fe;border:1px solid rgba(15,98,254,0.06);{% else %}background:#f0fdf4;color:#10b981;border:1px solid rgba(16,185,129,0.06);{% endif %}">{{ complaint.get_status_display }}</span></div>
+</div>
+
+
+<div style="margin-bottom:14px">
+<strong style="display:block;margin-bottom:8px">Description</strong>
+<div style="background:#fbfdff;border:1px solid #eef2f7;padding:12px;border-radius:10px">{{ complaint.description|linebreaks }}</div>
+</div>
+
+
+{% if complaint.attachment %}
+<div style="margin-bottom:14px">
+<strong>Attachment:</strong> <a href="{{ complaint.attachment.url }}" style="color:#0f62fe;text-decoration:none">Download</a>
+</div>
+{% endif %}
+
+
+<h3 style="margin:0 0 8px">Admin response / Change status</h3>
+<form method="post" style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
+{% csrf_token %}
+
+
+<label for="status" style="display:block;font-weight:600">Status</label>
+<select name="status" id="status" style="padding:10px;border-radius:8px;border:1px solid #e6e9ee;max-width:320px">
+{% for val,label in status_choices %}
+<option value="{{ val }}" {% if val == complaint.status %}selected{% endif %}>{{ label }}</option>
+{% endfor %}
+</select>
+
+
+<div>
+<label for="admin_response" style="display:block;font-weight:600;margin-bottom:6px">Admin response</label>
+<textarea name="admin_response" id="admin_response" rows="6" style="width:100%;padding:12px;border-radius:8px;border:1px solid #e6e9ee">{{ complaint.admin_response }}</textarea>
+</div>
+
+
+<div style="display:flex;gap:12px;align-items:center">
+<button type="submit" style="padding:10px 14px;border-radius:8px;border:0;background:#0f62fe;color:#fff;font-weight:600">Save</button>
+<a href="{% url 'admin_complaints_list' %}" style="padding:10px 14px;border-radius:8px;border:1px solid #e6e9ee;color:inherit;text-decoration:none">Back to list</a>
+</div>
+</form>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "dashboard.html" %}
+{% block content %}
+  <style>
+    .summary {background:#fff; padding:16px; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05); margin-bottom:20px; min-width: 720px;}
+    .summary strong {font-size:1.2em;}
+    table {width:100%; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,0.05);}
+    th, td {padding:12px; border-bottom:1px solid #eee; text-align:left; font-size:14px;}
+    th {background:#f9fafb; color:#374151; text-transform:uppercase; font-size:12px; letter-spacing:0.05em;}
+    tr:hover td {background:#f9fafb;}
+    .empty {text-align:center; padding:20px; color:#6b7280;}
+    .btn {display:inline-block; padding:8px 14px; background:#111827; color:#fff; border-radius:6px; text-decoration:none; margin-top:12px;}
+    .btn:hover {background:#374151;}
+  </style>
+  <div class="summary">
+    <p>Total pending amount: <strong>₹{{ total_pending_amount }}</strong></p>
+
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>Amount</th>
+        <th>Due Date</th>
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fee in fees %}
+        <tr>
+          <td><a href="{% url 'student_detail' fee.student.student_id %}">{{ fee.student.name }}</a></td>
+          <td>₹{{ fee.amount }}</td>
+          <td>{{ fee.due_date|date:"Y-m-d" }}</td>
+          <td>{{ fee.note|default:'-' }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="empty">No pending fees</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}

@@ -1,0 +1,108 @@
+{% extends "dashboard.html" %}
+{% block content %}
+<style>
+  .page-head { margin-bottom:16px; width: 680px; }
+  .page-head h1 { margin:0; font-size:22px; font-weight:700; }
+
+  .form-card {
+    background:white; border-radius:14px; padding:20px;
+    max-width:600px; box-shadow:0 1px 3px rgba(0,0,0,0.08);
+  }
+  .form-group { margin-bottom:16px; }
+  .form-group label { display:block; font-weight:600; margin-bottom:6px; }
+  .form-group input[type="text"],
+  .form-group select,
+  .form-group textarea,
+  .form-group input[type="file"] {
+    width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;
+    font-size:14px; background:#fafafa;
+  }
+  .form-group textarea { resize:vertical; }
+
+  .btn {
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:8px 16px; border-radius:10px; font-weight:600;
+    cursor:pointer; border:none; text-decoration:none; font-size:14px;
+  }
+  .btn.primary { background:var(--accent); color:white; }
+  .btn.secondary { background:#f1f1f1; color:#333; }
+
+  .error-list { color:#dc2626; margin-bottom:12px; }
+  .error-list li { margin-bottom:4px; }
+
+   .pic-preview { margin-top:8px; }
+   .msg{margin:8px 0;padding:10px 12px;border-radius:8px;border:1px solid transparent}
+   .msg-success{color:#14532d;background:#ecfdf5;border-color:#bbf7d0}
+   .msg-error{color:#7f1d1d;background:#fff1f2;border-color:#fecaca}
+   .pic-preview img { height:80px; border-radius:10px; display:block; margin-bottom:6px; }
+</style>
+
+<div class="page-head">
+  <h1>{{ action }} Meal</h1>
+</div>
+
+<div class="form-card">
+
+    {% if messages %}
+    {% for msg in messages %}
+        <p class="{% if msg.tags == 'error' %}msg msg-error{% else %}msg msg-success{% endif %}">{{ msg }}</p>
+    {% endfor %}
+    {% endif %}
+
+  {% if errors %}
+    <ul class="error-list">
+      {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label>Meal name</label>
+      <input type="text" name="meal_name" value="{{ meal_name }}">
+    </div>
+
+    <div class="form-group">
+      <label>Meal type</label>
+      <select name="meal_type">
+        <option value="">-- select --</option>
+        {% for key, label in meal_types %}
+          <option value="{{ key }}" {% if meal_type == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Weekday</label>
+      <select name="weekday">
+        <option value="">-- select --</option>
+        {% for val, label in weekday_choices %}
+          <option value="{{ val }}" {% if weekday|stringformat:"s" == val|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Rate (₹)</label>
+      <input type="text" name="rate" value="{{ rate }}">
+    </div>
+
+    <div class="form-group">
+      <label>Picture</label>
+      <input type="file" name="meal_pic">
+      {% if meal and meal.meal_pic %}
+        <div class="pic-preview">
+          <img src="{{ meal.meal_pic.url }}" alt="{{ meal.meal_name }}">
+          <label><input type="checkbox" name="remove_pic" value="1"> Remove picture</label>
+        </div>
+      {% endif %}
+    </div>
+
+    <div style="margin-top:12px;">
+      <button type="submit" class="btn primary">{{ action }}</button>
+      <a href="{% url 'admin_meals_list' %}" class="btn secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

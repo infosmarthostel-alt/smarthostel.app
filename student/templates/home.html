@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Smart Hostel</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+
+    <!-- keep font links as you had them -->
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <style>
+      /* -----------------------------
+         Theme variables (colors, sizes)
+         ------------------------------*/
+      :root{
+        --bg: #ffffff;
+        --muted: #617589;
+        --text: #111418;
+        --border: #dbe0e6;
+        --surface: #f0f2f4;
+        --accent: #111418;
+        --radius-xl: 16px;
+        --gap: 16px;
+        --max-width: 960px;
+        --container-padding-x: 40px; /* matches your px-40 */
+        font-family: "Public Sans", "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      }
+
+      /* Reset & layout helpers (keeps layout identical to Tailwind markup) */
+      *{box-sizing:border-box}
+      html,body{height:100%;margin:0;background:var(--bg);color:var(--text)}
+      a{text-decoration:none;color:inherit}
+
+      .size-full{width:100%;}
+      .min-h-screen{min-height:100vh}
+
+      .layout-container{display:flex;flex-direction:column;min-height:100vh}
+      header{display:flex;align-items:center;justify-content:space-between;padding:12px 40px;border-bottom:1px solid var(--border);}
+
+      /* header left */
+      header .brand{display:flex;align-items:center;gap:7px}
+      header .brand svg{width:30px;height:30px}
+      header h2{font-size:18px;margin:0;font-weight:700;letter-spacing:-0.3px}
+
+      /* header right */
+      header .right{display:flex;align-items:center;gap:24px}
+      header .right .links{display:flex;gap:20px;align-items:center}
+      header .right .links a{font-size:14px;font-weight:500;color:var(--text)}
+
+      /* logout button */
+      .btn-logout{display:inline-flex;align-items:center;justify-content:center;min-width:84px;height:40px;padding:0 16px;border-radius:12px;background:var(--surface);font-weight:700}
+
+      /* avatar */
+      .avatar{width:40px;height:40px;border-radius:999px;background-size:cover;background-position:center;flex-shrink:0}
+
+      /* content area */
+      .page-wrap{padding:20px var(--container-padding-x);display:flex;justify-content:center}
+      .layout-content-container{max-width:var(--max-width);width:100%;}
+
+      h3{margin:20px 0 8px 0;font-size:16px;font-weight:700}
+
+      /* hostel info grid */
+      .hostel-grid{padding:8px;display:inline;}
+      .info-row{display:grid;grid-template-columns:200px 1fr;padding:18px 0;border-top:1px solid var(--border);align-items:center}
+      .info-label{color:var(--muted);font-size:14px}
+      .info-value{font-size:14px}
+
+      /* announcement card */
+      .announcement{display:flex;gap:16px;align-items:stretch}
+      .announcement .card-text{flex:2}
+      .announcement .card-media{flex:1;border-radius:12px;background-size:cover;background-position:center;height:120px}
+
+      /* academic card */
+      .cards{display:flex;gap:16px}
+      .card{flex:1;min-width:158px;border-radius:12px;padding:18px;border:1px solid var(--border)}
+      .card p:first-child{margin:0;font-weight:500}
+      .card p:last-child{margin:8px 0 0 0;font-size:22px;font-weight:700}
+
+      /* Quick access tabs */
+      .quick-access{border-bottom:1px solid var(--border);padding:0}
+      .tabs{display:flex;gap:40px}
+      .tab-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;border-bottom:3px solid transparent;cursor:pointer}
+      .tab-btn svg{width:24px;height:24px}
+      .tab-btn .label{font-size:14px;font-weight:700;color:var(--muted)}
+      .tab-btn.active{border-bottom-color:var(--accent)}
+      .tab-btn.active .label{color:var(--accent)}
+
+      /* Tab panels */
+      .tab-panels{padding:18px}
+      .tab-panel{display:none}
+      .tab-panel.active{display:block}
+
+      /* responsive */
+      @media (max-width:900px){
+        .hostel-grid{grid-template-columns:1fr}
+        .info-row{grid-template-columns:1fr}
+        header{padding:12px 20px}
+        .page-wrap{padding:12px}
+      }
+
+      .size-4 {
+        display: flex;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        <header>
+          <div class="brand">
+            <div class="size-4" aria-hidden="true">
+              <svg viewBox="0 -6.83 55.484 55.484" xmlns="http://www.w3.org/2000/svg">
+                <g transform="translate(-819.325 -209.09)">                
+                <path d="M830.341,217.538a19.3,19.3,0,0,0-4.606,12.57,19.006,19.006,0,0,0,14.6,18.648" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>               
+                <path d="M833.052,246.26a5.987,5.987,0,0,1,3.847,1.94.246.246,0,0,1,0,.335,4.866,4.866,0,0,1-7.725-.067.247.247,0,0,1,0-.336A5.979,5.979,0,0,1,833.052,246.26Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M826.455,239.3a6.123,6.123,0,0,1,2.948,3.19.244.244,0,0,1-.116.314,5.9,5.9,0,0,1-4.272.373,6.127,6.127,0,0,1-2.948-3.19.245.245,0,0,1,.117-.314A5.9,5.9,0,0,1,826.455,239.3Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M824.232,230.16a6.239,6.239,0,0,1,1.955,3.909.241.241,0,0,1-.2.268,5.905,5.905,0,0,1-4.2-.871,6.242,6.242,0,0,1-1.955-3.91.242.242,0,0,1,.2-.268A5.907,5.907,0,0,1,824.232,230.16Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M826.109,220.822a6.322,6.322,0,0,1,.1,4.392.236.236,0,0,1-.292.153,6.046,6.046,0,0,1-3.416-2.655,6.322,6.322,0,0,1-.1-4.392.236.236,0,0,1,.292-.153A6.046,6.046,0,0,1,826.109,220.822Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M833.948,214.106a6.091,6.091,0,0,1-3.1,3.037.234.234,0,0,1-.307-.118,6.317,6.317,0,0,1-.386-4.375,6.085,6.085,0,0,1,3.1-3.037.233.233,0,0,1,.307.118A6.31,6.31,0,0,1,833.948,214.106Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M863.793,217.538a19.3,19.3,0,0,1,4.606,12.57,19.006,19.006,0,0,1-14.6,18.648" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M861.082,246.26a5.987,5.987,0,0,0-3.847,1.94.246.246,0,0,0,0,.335,4.866,4.866,0,0,0,7.725-.067.246.246,0,0,0,0-.336A5.974,5.974,0,0,0,861.082,246.26Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M867.678,239.3a6.125,6.125,0,0,0-2.947,3.19.244.244,0,0,0,.116.314,5.9,5.9,0,0,0,4.272.373,6.127,6.127,0,0,0,2.948-3.19.245.245,0,0,0-.117-.314A5.9,5.9,0,0,0,867.678,239.3Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M869.9,230.16a6.239,6.239,0,0,0-1.955,3.909.241.241,0,0,0,.2.268,5.9,5.9,0,0,0,4.2-.871,6.241,6.241,0,0,0,1.955-3.91.242.242,0,0,0-.2-.268A5.907,5.907,0,0,0,869.9,230.16Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M868.025,220.822a6.322,6.322,0,0,0-.1,4.392.236.236,0,0,0,.292.153,6.046,6.046,0,0,0,3.416-2.655,6.322,6.322,0,0,0,.1-4.392.236.236,0,0,0-.292-.153A6.042,6.042,0,0,0,868.025,220.822Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M860.186,214.106a6.091,6.091,0,0,0,3.1,3.037.234.234,0,0,0,.307-.118,6.317,6.317,0,0,0,.386-4.375,6.086,6.086,0,0,0-3.1-3.037.233.233,0,0,0-.307.118A6.311,6.311,0,0,0,860.186,214.106Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M847.238,218.546l-9.83,10.137c-.1.1.069.236.069.378v10.352c0,.3-.208.947.088.947h19.56c.3,0,.352-.651.352-.947V229.061c0-.142.036-.277-.064-.378l-10.007-10.137C847.2,218.335,847.447,218.335,847.238,218.546Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <rect width="6" height="7" rx="0.547" transform="translate(844.477 232.36)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                
+                <line y1="12.336" x2="12.564" transform="translate(834.674 218.546)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                
+                <line x1="12.564" y1="12.336" transform="translate(847.301 218.546)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                
+                </g>
+                
+                </svg>
+            </div>
+            <h2>Hostel Portal</h2>
+          </div>
+
+          <div class="right">
+            <div class="links" role="navigation" aria-label="top links">
+              <a href="{% url 's_home' %}">Home</a>
+              <a href="{% url 'meals_today' %}">Today Meals</a>
+              <a href="{% url 'student_submit_complaint'%}">Complaint</a>
+              <a href="{% url 'student_pay_page' %}">Fees</a>
+              <a href="{% url 'profile_view' %}">View Profile</a>
+            </div>
+
+            <a href="{% url 'logout' %}"><div class="btn-logout" role="button"><span>Logout</span></div></a>
+
+            <a href="{% url 'profile_view' %}"><div class="avatar" style='background-image: url("{{ student.profile_pic.url }}");' aria-hidden="true"></div></a>
+          </div>
+        </header>
+        
+        <div class="page-wrap">
+          {% block content %}
+          <div class="layout-content-container">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 4px;flex-wrap:wrap">
+              <p style="font-size:32px;font-weight:700;margin:0;">Welcome, {{ student.name }}</p>
+            </div>
+
+            {% if room %}
+
+            <h3>Hostel Information</h3>
+            <div class="hostel-grid">
+              <div class="info-row">
+                <div class="info-label">Room Number</div>
+                <div class="info-value">{{ room.room_number }}</div>
+              </div>
+
+              <div class="info-row">
+                <div class="info-label">Hostel Block</div>
+                <div class="info-value">{{ room.block_number }}</div>
+              </div>
+
+              <div class="info-row">
+                <div class="info-label">Room Type</div>
+                <div class="info-value">{{ room.type }}</div>
+              </div>
+
+              <div class="info-row">
+                <div class="info-label">Room Rent</div>
+                <div class="info-value">₹{{ room.room_rent }}</div>
+              </div>
+
+              <div class="info-row">
+                <div class="info-label">Admin Contact</div>
+                <div class="info-value">+91 79022 13947</div>
+              </div>
+            </div>
+
+            {% else %}
+              <h3>You have not been assigned a room yet.</h3>
+            {% endif %}
+
+            <!-- <h3>Academic Performance</h3>
+            <div class="cards">
+              <div class="card">
+                <p>GPA</p>
+                <p>3.8</p>
+              </div>
+            </div> -->
+            <h3>Notifications</h3>
+    
+              {% if notifications %}
+                <ul style="list-style:none;padding:0;margin:0;">
+                  {% for n in notifications %}
+                    <li class="card" style="border-radius:8px;margin-bottom:12px;border:1px solid var(--border);padding:12px;">
+                      <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+                        <div style="flex:1;min-width:0;">
+                          <h3 style="margin:0 0 6px 0;font-size:16px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                            {{ n.title }}
+                          </h3>
+                          <p style="margin:0 0 8px 0;color:var(--muted);line-height:1.4;">
+                            {{ n.message|linebreaksbr }}
+                          </p>
+                          <small style="color:var(--muted);display:block;">Posted {{ n.created_at|date:"M d, Y H:i" }}</small>
+                        </div>
+            
+
+                      </div>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <div class="card" style="padding:18px;border-radius:8px;">
+                  <p style="margin:0;font-weight:700">No active notifications</p>
+                  <p style="font-size:13px; margin:6px 0 0 0;color:var(--muted)">You're all caught up.</p>
+                </div>
+              {% endif %}
+            
+              <h3>Quick Access</h3>
+              <div class="quick-access">
+                <div class="tabs" role="tablist" aria-label="Quick access tabs">
+                  <div class="tab-btn active" role="tab" tabindex="0" aria-selected="true" data-tab-target="meals">
+                    <!-- ForkKnife icon -->
+                    <svg viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M216,40V224a8,8,0,0,1-16,0V176H152a8,8,0,0,1-8-8,268.75,268.75,0,0,1,7.22-56.88c9.78-40.49,28.32-67.63,53.63-78.47A8,8,0,0,1,216,40Zm-96.11-1.31a8,8,0,1,0-15.78,2.63L111.89,88H88V40a8,8,0,0,0-16,0V88H48.11l7.78-46.68a8,8,0,1,0-15.78-2.63l-8,48A8.17,8.17,0,0,0,32,88a48.07,48.07,0,0,0,40,47.32V224a8,8,0,0,0,16,0V135.32A48.07,48.07,0,0,0,128,88a8.17,8.17,0,0,0-.11-1.31Z"/></svg>
+                    <div class="label">Today's Meals</div>
+                  </div>
+  
+                  <div class="tab-btn" role="tab" tabindex="0" aria-selected="false" data-tab-target="complaint">
+                    <!-- Megaphone icon -->
+                    <svg viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M240,120a48.05,48.05,0,0,0-48-48H152.2c-2.91-.17-53.62-3.74-101.91-44.24A16,16,0,0,0,24,40V200a16,16,0,0,0,26.29,12.25c37.77-31.68,77-40.76,93.71-43.3v31.72A16,16,0,0,0,151.12,214l11,7.33A16,16,0,0,0,186.5,212l11.77-44.36A48.07,48.07,0,0,0,240,120ZM40,199.93V40h0c42.81,35.91,86.63,45,104,47.24v65.48C126.65,155,82.84,164.07,40,199.93Zm131,8,0,.11-11-7.33V168h21.6ZM192,152H160V88h32a32,32,0,1,1,0,64Z"/></svg>
+                    <div class="label">Complaint</div>
+                  </div>
+  
+                  <div class="tab-btn" role="tab" tabindex="0" aria-selected="false" data-tab-target="fees">
+                    <!-- Currency icon -->
+                    <svg viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"/></svg>
+                    <div class="label">Fees</div>
+                  </div>
+  
+                  <div class="tab-btn" role="tab" tabindex="0" aria-selected="false" data-tab-target="roommates">
+                    <!-- Users icon -->
+                    <svg viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1-7.37-4.89,8,8,0,0,1,0-6.22A8,8,0,0,1,192,112a24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.84,8,57,57,0,0,0-98.16,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"/></svg>
+                    <div class="label">Room Mates</div>
+                  </div>
+                </div>
+  
+                <div class="tab-panels" style="padding: 0;">
+                  <div id="meals" class="tab-panel active">
+                    
+                    <div class="layout-content-container" style="margin-top:17px; display: flex; gap:6px;">
+                      
+                    
+                      {% if meals_by_type %}
+                        {% for meal_type, meals in meals_by_type.items %}
+                          <section style="margin-bottom: 24px;">
+                            <h3 style="margin:6px 0 12px 0;font-size:16px;font-weight:700;">{{ meal_type }}</h3>
+                    
+                            <div style="display:flex; flex-wrap:wrap; gap:16px;">
+                              {% for meal in meals %}
+                                <article class="card" style="width:240px;padding:12px;border-radius:8px;border:1px solid var(--border);display:flex;flex-direction:column;">
+                                  {% if meal.meal_pic %}
+                                    <div style="height:120px;overflow:hidden;border-radius:8px;margin-bottom:10px;background:#f7f7f7;">
+                                      <img src="{{ meal.meal_pic.url }}" alt="{{ meal.meal_name }}" style="width:100%;height:100%;object-fit:cover;display:block;">
+                                    </div>
+                                  {% endif %}
+                    
+                                  <div style="flex:1;min-height:0;">
+                                    <strong style="display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ meal.meal_name }}</strong>
+                                    <p style="margin:6px 0 0 0;color:var(--muted);font-size:14px;">{{ meal.description|default:"No description" }}</p>
+                                  </div>
+                    
+                                  <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                                    <small style="color:var(--muted);font-size:13px;">₹{{ meal.rate }}</small>
+                                    <small style="color:var(--muted);font-size:12px;">{{ meal.created_at|date:"M d, Y" }}</small>
+                                  </div>
+                                </article>
+                              {% endfor %}
+                            </div>
+                          </section>
+                        {% endfor %}
+                      {% else %}
+                        <div class="card" style="padding:18px;border-radius:8px;">
+                          <p style="margin:0;font-weight:700">No meals scheduled for today.</p>
+                          <p style="margin:6px 0 0 0;color:var(--muted)">Check back later or contact the admin.</p>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+  
+                  <div id="complaint" class="tab-panel">
+                    <strong>Complaint</strong>
+                    <p style="color:var(--muted)">You have 2 open complaints. <a href="#">View complaints</a></p>
+                  </div>
+  
+                  <div id="fees" class="tab-panel">
+                    <strong>Fees</strong>
+                    <p style="color:var(--muted)">{{ room.room_rent  }}rs &nbsp;<a href="{% url 'student_pay_page' %}">Pay now</a></p>
+                  </div>
+  
+                  <div id="roommates" class="tab-panel">
+                    {% if roommates.exists %}
+                      <div class="roommate-list" style="display:flex;flex-direction:column;gap:.6rem;">
+                        {% for r in roommates %}
+                          <div class="roommate-row" style="display:flex;align-items:center;gap:.75rem;padding:.6rem;border-radius:6px;background:#fff;border:1px solid #eee;">
+                            {# optional profile thumbnail if you store profile_pic #}
+                            <div class="avatar" style="width:44px;height:44px;border-radius:50%;overflow:hidden;background:#f2f2f2;display:flex;align-items:center;justify-content:center;font-weight:600;">
+                              {% if r.profile_pic %}
+                                <img src="{{ r.profile_pic.url }}" alt="{{ r.name }}" style="width:100%;height:100%;object-fit:cover;">
+                              {% else %}
+                                {{ r.name|slice:":1" }}
+                              {% endif %}
+                            </div>
+
+                            <div style="flex:1;min-width:0;">
+                              <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+                                <div style="min-width:0;">
+                                  <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                    {{ r.name }}
+                                  </div>
+                                  <div style="font-size:.85rem;color:#666;">
+                                    {{ r.programme|default:"—" }} · Joined: {{ r.joined_date|date:"d M Y" }}
+                                  </div>
+                                </div>
+
+                                <div style="text-align:right;display: flex;gap: 12px; align-items: center;">
+                                  {# phone / email quick actions #}
+                                  {% if r.phone %}
+                                    <div style="font-size:.85rem;"><a href="tel:{{ r.phone }}" title="Call {{ r.name }}"><svg height="15" width="15" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                                      viewBox="0 0 512 512"  xml:space="preserve">
+                                   <style type="text/css">
+                                     .st0{fill:#323232;}
+                                   </style>
+                                   <g>
+                                     <path class="st0" d="M94.811,21.696c-35.18,22.816-42.091,94.135-28.809,152.262c10.344,45.266,32.336,105.987,69.42,163.165
+                                       c34.886,53.79,83.557,102.022,120.669,129.928c47.657,35.832,115.594,58.608,150.774,35.792
+                                       c17.789-11.537,44.218-43.058,45.424-48.714c0,0-15.498-23.896-18.899-29.14l-51.972-80.135
+                                       c-3.862-5.955-28.082-0.512-40.386,6.457c-16.597,9.404-31.882,34.636-31.882,34.636c-11.38,6.575-20.912,0.024-40.828-9.142
+                                       c-24.477-11.262-51.997-46.254-73.9-77.947c-20.005-32.923-40.732-72.322-41.032-99.264c-0.247-21.922-2.341-33.296,8.304-41.006
+                                       c0,0,29.272-3.666,44.627-14.984c11.381-8.392,26.228-28.286,22.366-34.242l-51.972-80.134c-3.401-5.244-18.899-29.14-18.899-29.14
+                                       C152.159-1.117,112.6,10.159,94.811,21.696z"/>
+                                   </g>
+                                   </svg></a></div>
+                                  {% endif %}
+                                  {% if r.email %}
+                                    <div style="font-size:.85rem;"><a href="mailto:{{ r.email }}" title="Email {{ r.name }}">
+                                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect  fill="white"/>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M5.96802 4H18.032C18.4706 3.99999 18.8491 3.99998 19.1624 4.02135C19.4922 4.04386 19.8221 4.09336 20.1481 4.22836C20.8831 4.53284 21.4672 5.11687 21.7716 5.85195C21.9066 6.17788 21.9561 6.50779 21.9787 6.83762C22 7.15088 22 7.52936 22 7.96801V16.032C22 16.4706 22 16.8491 21.9787 17.1624C21.9561 17.4922 21.9066 17.8221 21.7716 18.1481C21.4672 18.8831 20.8831 19.4672 20.1481 19.7716C19.8221 19.9066 19.4922 19.9561 19.1624 19.9787C18.8491 20 18.4706 20 18.032 20H5.96801C5.52936 20 5.15088 20 4.83762 19.9787C4.50779 19.9561 4.17788 19.9066 3.85195 19.7716C3.11687 19.4672 2.53284 18.8831 2.22836 18.1481C2.09336 17.8221 2.04386 17.4922 2.02135 17.1624C1.99998 16.8491 1.99999 16.4706 2 16.032V7.96802C1.99999 7.52937 1.99998 7.15088 2.02135 6.83762C2.04386 6.50779 2.09336 6.17788 2.22836 5.85195C2.53284 5.11687 3.11687 4.53284 3.85195 4.22836C4.17788 4.09336 4.50779 4.04386 4.83762 4.02135C5.15088 3.99998 5.52937 3.99999 5.96802 4ZM4.31745 6.27777C4.68114 5.86214 5.3129 5.82002 5.72854 6.1837L11.3415 11.095C11.7185 11.4249 12.2815 11.4249 12.6585 11.095L18.2715 6.1837C18.6871 5.82002 19.3189 5.86214 19.6825 6.27777C20.0462 6.69341 20.0041 7.32517 19.5885 7.68885L13.9755 12.6002C12.8444 13.5899 11.1556 13.5899 10.0245 12.6002L4.41153 7.68885C3.99589 7.32517 3.95377 6.69341 4.31745 6.27777Z" fill="#323232"/>
+                                        </svg>
+                                    </a></div>
+                                  {% endif %}
+                                </div>
+                              </div>
+
+                              {# optional extra info, e.g. parent contact (hide if empty) #}
+                              <div style="font-size:.82rem;color:#777;margin-top:.25rem;">
+                                {% if r.parent_name %}Parent: {{ r.parent_name }}{% endif %}
+                                {% if r.parent_phone %} · <a href="tel:{{ r.parent_phone }}" style="color:inherit;text-decoration:none;">{{ r.parent_phone }}</a>{% endif %}
+                                <a href="{{ r.id_proof.url }}" style="padding: 4px 9px; background: #dddddd; border-radius: 10px;display: inline-flex
+;
+    align-content: center;
+    align-items: center;
+    border: 1px solid #c4c4c4;">proof</a>
+                              </div>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </div>
+
+                    {% else %}
+                      <p class="muted">No other students are currently assigned to this room.</p>
+                    {% endif %}
+
+                  </div>
+                </div>
+              </div>
+
+            <h3>Announcements</h3>
+            <div class="announcement" style="padding:8px;">
+              <div class="card-text">
+                <p style="margin:0;font-weight:700">Important Update</p>
+                <p style="margin:6px 0 0 0;color:var(--muted)">Check out the latest hostel news and updates.</p>
+              </div>
+              <div class="card-media" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCuwGhHBzCqteZV8otXmkIrFAz_QFTZ55qqxcp4v0KbNmO88Kqca6U5NTrvUIRZDcdoP9Ig8tO_vPJTFsjc6jlfPUiesgnk4m_rg5xRw-8t3k5sSFuyplXJi6MoLYynzu_yTOYVoV__fQGb2stuxveN8VVctvAuMrxtgRij4t8gJ0JFFFod47ztVO7N8FmpwvOxSMaf1moTZWv8VpLqg876d_mcNpxdqqZZ5pC0XbQuxNqLfcsCnz12lfUxmoQ-SHOJLp6IoTqw9-oY");'></div>
+            </div>
+
+            
+          </div>
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      // Quick access tab switching: unobtrusive, keyboard accessible
+      (function(){
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        function activate(targetId, clickedBtn){
+          // buttons
+          tabButtons.forEach(b=>{
+            const isActive = b.dataset.tabTarget === targetId;
+            b.classList.toggle('active', isActive);
+            b.setAttribute('aria-selected', String(isActive));
+            if(isActive) b.focus({preventScroll:true});
+          });
+
+          // panels
+          panels.forEach(p=>{
+            p.classList.toggle('active', p.id === targetId);
+          });
+        }
+
+        tabButtons.forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            activate(btn.dataset.tabTarget, btn);
+          });
+
+          btn.addEventListener('keydown', (e)=>{
+            if(e.key === 'Enter' || e.key === ' '){
+              e.preventDefault();
+              activate(btn.dataset.tabTarget, btn);
+            }
+            // left/right arrow navigation
+            if(e.key === 'ArrowRight' || e.key === 'ArrowLeft'){
+              e.preventDefault();
+              const nodes = Array.from(tabButtons);
+              const idx = nodes.indexOf(btn);
+              const nextIdx = e.key === 'ArrowRight' ? (idx+1)%nodes.length : (idx-1+nodes.length)%nodes.length;
+              nodes[nextIdx].click();
+            }
+          });
+        });
+
+        // ensure first is active on load
+        if(tabButtons.length){
+          const initial = document.querySelector('.tab-btn.active') || tabButtons[0];
+          activate(initial.dataset.tabTarget, initial);
+        }
+      })();
+    </script>
+  </body>
+</html>

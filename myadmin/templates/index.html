@@ -1,0 +1,436 @@
+
+
+
+
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+    <title>SmartHostel - Home</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; padding: 0; }
+      body {
+        font-family: "Public Sans", "Noto Sans", sans-serif;
+        background: #ffffff;
+        color: #111418;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .app-root {
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+        overflow-x: hidden;
+      }
+      .layout-container {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        height: 100%;
+      }
+
+      header.app-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 40px;
+        border-bottom: 1px solid #f0f2f4;
+        gap: 16px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .brand svg { width: 30px; height: 30px; }
+      .brand h2 {
+        font-size: 18px;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+      }
+
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+      }
+      .nav a {
+        color: #111418;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+      }
+
+  
+      .page-inner {
+        display: flex;
+        justify-content: center;
+        padding: 20px 40px;
+        flex: 1 1 auto;
+      }
+      .content {
+        width: 100%;
+        max-width: 960px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .hero-wrap {
+        margin: 0;
+      }
+      .hero {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        min-height: 320px;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 8px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #fff;
+      }
+      .hero .title {
+        text-align: center;
+        font-weight: 900;
+        font-size: 32px;
+        line-height: 1.05;
+        margin: 0;
+      }
+      .hero .subtitle {
+        max-width: 900px;
+        text-align: center;
+        font-size: 14px;
+        margin: 0;
+      }
+      .btn-primary {
+        min-width: 84px;
+        max-width: 480px;
+        height: 40px;
+        padding: 0 16px;
+        border-radius: 8px;
+        background: #1773cf;
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+      }
+
+   
+      .section-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 20px 4px 8px;
+      }
+      .section-desc {
+        font-size: 15px;
+        margin: 4px 4px 12px;
+        color: #111418;
+      }
+
+      .card-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+        padding: 8px 4px 16px;
+      }
+      .card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #fff;
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #dce0e5;
+      }
+      .card .icon {
+        width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .card h3 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: #111418;
+      }
+
+      .room-thumb {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background-position: center;
+        background-size: cover;
+        flex-shrink: 0;
+      }
+
+
+      .gallery {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+        padding: 8px 4px 16px;
+      }
+      .gallery .gallery-item {
+        border-radius: 10px;
+        height: 0;
+        padding-bottom: 100%;
+        background-position: center;
+        background-size: cover;
+      }
+
+   
+      footer.app-footer {
+        display: flex;
+        justify-content: center;
+        padding: 24px 0;
+      }
+      .footer-inner {
+        width: 100%;
+        max-width: 960px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        align-items: center;
+      }
+      .footer-links {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .social {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+      .caption {
+        color: #637588;
+        font-size: 14px;
+        margin: 0;
+      }
+
+
+      @media (min-width: 480px) {
+        .hero { min-height: 420px; padding: 28px; border-radius: 12px; }
+        .hero .title { font-size: 40px; }
+        .hero .subtitle { font-size: 16px; }
+        .btn-primary { height: 48px; font-size: 16px; padding: 0 20px; }
+      }
+      @media (min-width: 900px) {
+        header.app-header { padding: 14px 80px; }
+        .page-inner { padding: 32px 40px; }
+      }
+
+      /* small utility tweaks to mimic the original */
+      .text-center { text-align: center; }
+      .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    </style>
+  </head>
+
+  <body>
+    <div class="app-root">
+      <div class="layout-container">
+        <header class="app-header">
+          <div class="brand">
+            <div aria-hidden="true">
+
+              <svg viewBox="0 -6.83 55.484 55.484" xmlns="http://www.w3.org/2000/svg">
+      
+                <g transform="translate(-819.325 -209.09)">
+                
+                <path d="M830.341,217.538a19.3,19.3,0,0,0-4.606,12.57,19.006,19.006,0,0,0,14.6,18.648" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M833.052,246.26a5.987,5.987,0,0,1,3.847,1.94.246.246,0,0,1,0,.335,4.866,4.866,0,0,1-7.725-.067.247.247,0,0,1,0-.336A5.979,5.979,0,0,1,833.052,246.26Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M826.455,239.3a6.123,6.123,0,0,1,2.948,3.19.244.244,0,0,1-.116.314,5.9,5.9,0,0,1-4.272.373,6.127,6.127,0,0,1-2.948-3.19.245.245,0,0,1,.117-.314A5.9,5.9,0,0,1,826.455,239.3Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M824.232,230.16a6.239,6.239,0,0,1,1.955,3.909.241.241,0,0,1-.2.268,5.905,5.905,0,0,1-4.2-.871,6.242,6.242,0,0,1-1.955-3.91.242.242,0,0,1,.2-.268A5.907,5.907,0,0,1,824.232,230.16Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M826.109,220.822a6.322,6.322,0,0,1,.1,4.392.236.236,0,0,1-.292.153,6.046,6.046,0,0,1-3.416-2.655,6.322,6.322,0,0,1-.1-4.392.236.236,0,0,1,.292-.153A6.046,6.046,0,0,1,826.109,220.822Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M833.948,214.106a6.091,6.091,0,0,1-3.1,3.037.234.234,0,0,1-.307-.118,6.317,6.317,0,0,1-.386-4.375,6.085,6.085,0,0,1,3.1-3.037.233.233,0,0,1,.307.118A6.31,6.31,0,0,1,833.948,214.106Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M863.793,217.538a19.3,19.3,0,0,1,4.606,12.57,19.006,19.006,0,0,1-14.6,18.648" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M861.082,246.26a5.987,5.987,0,0,0-3.847,1.94.246.246,0,0,0,0,.335,4.866,4.866,0,0,0,7.725-.067.246.246,0,0,0,0-.336A5.974,5.974,0,0,0,861.082,246.26Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M867.678,239.3a6.125,6.125,0,0,0-2.947,3.19.244.244,0,0,0,.116.314,5.9,5.9,0,0,0,4.272.373,6.127,6.127,0,0,0,2.948-3.19.245.245,0,0,0-.117-.314A5.9,5.9,0,0,0,867.678,239.3Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M869.9,230.16a6.239,6.239,0,0,0-1.955,3.909.241.241,0,0,0,.2.268,5.9,5.9,0,0,0,4.2-.871,6.241,6.241,0,0,0,1.955-3.91.242.242,0,0,0-.2-.268A5.907,5.907,0,0,0,869.9,230.16Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M868.025,220.822a6.322,6.322,0,0,0-.1,4.392.236.236,0,0,0,.292.153,6.046,6.046,0,0,0,3.416-2.655,6.322,6.322,0,0,0,.1-4.392.236.236,0,0,0-.292-.153A6.042,6.042,0,0,0,868.025,220.822Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M860.186,214.106a6.091,6.091,0,0,0,3.1,3.037.234.234,0,0,0,.307-.118,6.317,6.317,0,0,0,.386-4.375,6.086,6.086,0,0,0-3.1-3.037.233.233,0,0,0-.307.118A6.311,6.311,0,0,0,860.186,214.106Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <path d="M847.238,218.546l-9.83,10.137c-.1.1.069.236.069.378v10.352c0,.3-.208.947.088.947h19.56c.3,0,.352-.651.352-.947V229.061c0-.142.036-.277-.064-.378l-10.007-10.137C847.2,218.335,847.447,218.335,847.238,218.546Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+                
+                <rect width="6" height="7" rx="0.547" transform="translate(844.477 232.36)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                
+                <line y1="12.336" x2="12.564" transform="translate(834.674 218.546)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                
+                <line x1="12.564" y1="12.336" transform="translate(847.301 218.546)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                
+                </g>
+                
+                </svg>
+            </div>
+            <h2>Hostel Hostel - Register</h2>
+          </div>
+
+          <div class="nav">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+            <a href="{% url 'login_return' %}">Student Login</a>
+            <a href="{% url 'student_register' %}">Register</a>
+          </div>
+        </header>
+
+        <main class="page-inner">
+          <div class="content">
+            <section class="hero-wrap">
+              <div
+                class="hero"
+                style='background-image: linear-gradient(rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.40) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuB5beP43Mfk-Owko7a9yPZyECkVEFL4lXdqzc5yz2XePnzdqOr_HvL-pkG4jDpRaD3PvuZfFAB_RaU5UGtywB2RXMn3n7kqralls7RYdR1cL0oSkLfJrzv9SWn33WfEAey_wfnSolhU0d0r0Snu32ShrJ_7CfROW-P76RBEtNdHaQLl2z5wDNb5_JXYBcp-SExNGhx9mdpVciacqOjTS_TSfDDL128WCJB_wlQqFtjmesV9LrDs-KH25jiW2yDQobItPyrNDfp11gsT");'>
+                <h1 class="title">Welcome to Our Hostel</h1>
+                <p class="subtitle">
+                  Experience comfortable and secure living with our comprehensive hostel management services. We provide a safe and supportive environment for students and
+                  staff.
+                </p>
+                <button class="btn-primary"><span class="truncate">Learn More</span></button>
+              </div>
+            </section>
+
+            <h2 class="section-title">About Our Hostel</h2>
+            <p class="section-desc">
+              Our hostel offers a variety of amenities to ensure a pleasant stay for all residents. We provide clean and well-maintained rooms, study areas, recreational
+              facilities, and 24/7 security. Our dedicated staff is committed to creating a welcoming and inclusive community.
+            </p>
+
+            <h2 class="section-title">Amenities</h2>
+            <div class="card-grid" aria-label="amenities">
+              <div class="card">
+                <div class="icon" aria-hidden="true">
+                  <!-- wifi icon -->
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M140,204a12,12,0,1,1-12-12A12,12,0,0,1,140,204ZM237.08,87A172,172,0,0,0,18.92,87,8,8,0,0,0,29.08,99.37a156,156,0,0,1,197.84,0A8,8,0,0,0,237.08,87ZM205,122.77a124,124,0,0,0-153.94,0A8,8,0,0,0,61,135.31a108,108,0,0,1,134.06,0,8,8,0,0,0,11.24-1.3A8,8,0,0,0,205,122.77Zm-32.26,35.76a76.05,76.05,0,0,0-89.42,0,8,8,0,0,0,9.42,12.94,60,60,0,0,1,70.58,0,8,8,0,1,0,9.42-12.94Z"></path></svg>
+                </div>
+                <h3>High-Speed Wi-Fi</h3>
+              </div>
+
+              <div class="card">
+                <div class="icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M208,72H24V48A8,8,0,0,0,8,48V208a8,8,0,0,0,16,0V176H232v32a8,8,0,0,0,16,0V112A40,40,0,0,0,208,72ZM24,88H96v72H24Zm88,72V88h96a24,24,0,0,1,24,24v48Z"></path></svg>
+                </div>
+                <h3>Comfortable Rooms</h3>
+              </div>
+
+              <div class="card">
+                <div class="icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h64a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64Z"></path></svg>
+                </div>
+                <h3>Study Areas</h3>
+              </div>
+
+              <div class="card">
+                <div class="icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M208,40H48A16,16,0,0,0,32,56v58.78c0,89.61,75.82,119.34,91,124.39a15.53,15.53,0,0,0,10,0c15.2-5.05,91-34.78,91-124.39V56A16,16,0,0,0,208,40Zm0,74.79c0,78.42-66.35,104.62-80,109.18-13.53-4.51-80-30.69-80-109.18V56H208ZM82.34,141.66a8,8,0,0,1,11.32-11.32L112,148.68l50.34-50.34a8,8,0,0,1,11.32,11.32l-56,56a8,8,0,0,1-11.32,0Z"></path></svg>
+                </div>
+                <h3>24/7 Security</h3>
+              </div>
+
+              <div class="card">
+                <div class="icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"></path></svg>
+                </div>
+                <h3>Common Rooms</h3>
+              </div>
+
+              <div class="card">
+                <div class="icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216,64H147.31l34.35-34.34a8,8,0,1,0-11.32-11.32L128,60.69,85.66,18.34A8,8,0,0,0,74.34,29.66L108.69,64H40A16,16,0,0,0,24,80V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V80A16,16,0,0,0,216,64ZM40,80H144V200H40ZM216,200H160V80h56V200Zm-16-84a12,12,0,1,1-12-12A12,12,0,0,1,200,116Zm0,48a12,12,0,1,1-12-12A12,12,0,0,1,200,164Z"></path></svg>
+                </div>
+                <h3>Recreational Facilities</h3>
+              </div>
+            </div>
+
+            <h2 class="section-title">Room Types</h2>
+            <div class="card-grid">
+              <div class="card">
+                <div class="room-thumb" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCTANaFPts69TjgnR0cUM4faMiwTNba7Ep_cyWru76MMmLJ8oTbDqkyYfLwnydOfz8E-0hw_IlK3Qahl7Bt1akNvnLlc0e-Krf83ptxK6yjLs6SzYEZAWRRhTJMuPioGk6eeSLfTP4xYBuKvFDHqugEFUuwt3vc40sk0DFBjuumyCwww_k7Vgu05xWs839NeWBro5VK6CVbSJ_x_ocAd5Po6Jj1f3IJQj-lh04OTJR9QkorBkaSO708CGfG9hcyd6FvU_a2GnQ7UR49");'></div>
+                <h3>Single Room</h3>
+              </div>
+
+              <div class="card">
+                <div class="room-thumb" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDmDbGsKHDm39rZN26rK-WfLOjcTq_wwklIz_J9esAruWdWZ4SfQpJ1sZ5YEAdBlBpQT9mdHLM4QCzqk1X15h0Z06Q1uE2n6tk6cdWd6A0ROKRN_L3Ib7Z5OL2bBnp9VAH89e983nlKtKSBNy0rn1PeSbaDI9QbSKPNjEKEzER4VVJD7oy-TABlEVVylrQv1pWQRrF_uyuNj117JZPIqX3y4RwhfiVOcYBsa2H08G72yLUPH6a0_kS4liQ0cd0MmiXCPGknckJ8-c4s");'></div>
+                <h3>Double Room</h3>
+              </div>
+
+              <div class="card">
+                <div class="room-thumb" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDC5jdXt7nACrRFN808LvT-5GMqpo0G6aCpd-Wngv8v1JUQLGCW4nj13qJ8VlGC-rY8sYtAru7YhIGiYuLxfU0cR9LVARDrkUzxh09yBsNSWiSrKQSOhXO_cFvImuUxJAmpaFmwsHjqCYV65phGbOeNt2yhC2DGbc_TRCLizSNi9XUxqXEUPOUDg3Ekk3zxvEPWr0NuOsi3Zl862TKtYBhPC5Aef3dLBrRgbgcGIHTmsHHNlPKJARLj1vpg64sb-Vt_yCL60wMEd4Ih");'></div>
+                <h3>Dormitory</h3>
+              </div>
+            </div>
+
+            <h2 class="section-title">Gallery</h2>
+            <div class="gallery">
+              <div class="gallery-item" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC3iHETHD6UlBltChuzHsmJXeloWHjatCnEtFzEflUqJC0NemYb-CM0GfgsGKHQnMMoFWh6RYwuu_DcFyVTxxPuU39hI1zcoFBiD56NNw0f6L-Fpxo7mk7n0li2yKROtoqyrDhQZ6xKc9BUbVHJQOwzEkgat1qzRqWgFT9DHS41h6XnDbw5eucJv1xdt28ss8GWJNPYAvgI91xKvPgymHiFB7QRzu9g8RR0ObTJXP4L8UnLZI1bBZ8V2JMlmnUUQd0DAbH-ug53cDbb");'></div>
+
+              <div class="gallery-item" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuChkkRnJld40xicV747LjtxRz-O8wrr0gELOP6NZlIML1jUARha1UBOcvi7b1tkWNW41_FYma6lwnD0X12CtN-cJ3j4dmYD5m9msZ0uul5qijLc0wDbOfxlw40p6w4uVvam-lQ_xm1UiYlenfFQ-67Y5ldDPyulQ6EQmLGPkpSRCkh8fdyFPiZfTPEnGjWuzNqoAyVSvS99IF-FN9wpQ5849ASUHb6qO-Gx04WWIJDZpqUR7HfRPWZlmjzdYYqTODebnYbCqkLWRw1j");'></div>
+
+              <div class="gallery-item" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCz3J20evPSuw42xT7mv0mGklqYXwxP0t2ddS3xFLXcrCE2-Js1w8F9LrcDZDRFinn7-G8b_Qek6GnriQhArCvGMtanRnxzhULl6BqUtRiEmdfq9BfMLxQSRvXaGpZI5wq6hkWhhPZ82PIkCeZ0EaGhAOZO260AOHO-SLm-Lb06ezVimM3-baFolNfnxHXfREhXNYUqFIy8Y4Uy7l1fU5IqtMDeidTA8AysHCuZVDYw84nFDsDeBgavviMNCXw0JNEmD3MCuCagB_SH");'></div>
+
+              <div class="gallery-item" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCW-Iv6cXXbmj64djgypIt33PdLHAddIXJ91Yf_NKdfDeIDIwR-HKq1yfMnXNUQN3yspW17xYfAbNwuNZ1VZpMlKFXZMiGc9bsbLxq9oA-C98OzZnMubvrNDgNk7hGN5TEgpls3KPCbKVczX19g1i-frrkKLHQGiJ8n0kMF06naqJ3ejA-49ETaOjwJi_i__8mQf_bnFq6VNDWLZM2-k2-x6NmBoHPugS0N0uBvUsYPIamPLqjyFP7QiSHBIJxoP4_thYOnKIlzQzRs");'></div>
+
+              <div class="gallery-item" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCRMuPMdLGq2J2G7Q9Kntcnj-hPCo4ol70PDjZw33VgkJjdAu8wDjWES5vWSuioSXhzrXKuF4yuXD_gq4jMrFmyWfxIkS4_0g6WiGhhYExq0LvP2kTH9MJKkdWIGhcCyVofbIZM6mhWzvwCnh2jiQJxMWMJ_gHkjuq75KXN8Vcs-3rxygKsdLRRizpyQYx8oz0V47T-6kxNNYOdFbuO6fP2ZjcSQpKq-wG7gS8SaMl5C0OU2bCuNdNl-czM6jkQFjnsxmCXGlEoZwRD");'></div>
+
+              <div class="gallery-item" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBlzyHyow3YUCwtmrOlCFhXlj7h9erKdPBZ99ThEFZc0fHCCYtgIFGhsvVkF_kVh_EWXOTuBLk-bU0N0qclq1DvnxK1vokLWnV7uiDVNiFKFhIvefkYow7rFA2wYbIQ4DEELZbgoa9Cwfr29NM07j5BTfLTp_4nh1am6ZgkycHx0OFyL57ZsEPcEA2D-wUo1sR86AMYq5aXs8ld2bruCL7yU_QhnOIPeHmr0vpSC8m9tDr07vEdO3bH8N4syH4kxkNuIpXODQD0OSDV");'></div>
+            </div>
+          </div>
+        </main>
+
+        <footer class="app-footer">
+          <div class="footer-inner">
+            <div class="footer-links">
+              <a class="caption" href="#">Contact Us</a>
+              <a class="caption" href="#">Privacy Policy</a>
+              <a class="caption" href="#">Terms of Service</a>
+            </div>
+
+            <div class="social" role="navigation" aria-label="social-links">
+              <a href="#" aria-label="twitter">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"></path></svg>
+              </a>
+              <a href="#" aria-label="facebook">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V152h24a8,8,0,0,0,0-16H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,0-16H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0,0,16h24v63.63a88,88,0,1,1,16,0Z"></path></svg>
+              </a>
+              <a href="#" aria-label="instagram">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"></path></svg>
+              </a>
+            </div>
+
+            <p class="caption">© 2024 Hostel Management. All rights reserved.</p>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

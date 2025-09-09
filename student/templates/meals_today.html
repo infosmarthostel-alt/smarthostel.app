@@ -1,0 +1,52 @@
+{% extends "home.html" %}
+{% load static %}
+
+{% block content %}
+
+<div style="display: flex; flex-direction:column">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 4px;flex-wrap:wrap">
+    <p style="font-size:32px;font-weight:700;margin:0;">Meals for {{ weekday_name }}</p>
+  </div>
+  <div class="layout-content-container" style="display: flex; gap:6px;">
+    
+  
+    {% if meals_by_type %}
+      {% for meal_type, meals in meals_by_type.items %}
+        <section style="margin-bottom: 24px;">
+          <h3 style="margin:6px 0 12px 0;font-size:16px;font-weight:700;">{{ meal_type }}</h3>
+  
+          <div style="display:flex; flex-wrap:wrap; gap:16px;">
+            {% for meal in meals %}
+              <article class="card" style="width:240px;padding:12px;border-radius:8px;border:1px solid var(--border);display:flex;flex-direction:column;">
+                {% if meal.meal_pic %}
+                  <div style="height:120px;overflow:hidden;border-radius:8px;margin-bottom:10px;background:#f7f7f7;">
+                    <img src="{{ meal.meal_pic.url }}" alt="{{ meal.meal_name }}" style="width:100%;height:100%;object-fit:cover;display:block;">
+                  </div>
+                {% endif %}
+  
+                <div style="flex:1;min-height:0;">
+                  <strong style="display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ meal.meal_name }}</strong>
+                  <p style="margin:6px 0 0 0;color:var(--muted);font-size:14px;">{{ meal.description|default:"No description" }}</p>
+                </div>
+  
+                <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                  <small style="color:var(--muted);font-size:13px;">₹{{ meal.rate }}</small>
+                  <small style="color:var(--muted);font-size:12px;">{{ meal.created_at|date:"M d, Y" }}</small>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+      {% endfor %}
+    {% else %}
+      <div class="card" style="padding:18px;border-radius:8px;">
+        <p style="margin:0;font-weight:700">No meals scheduled for today.</p>
+        <p style="margin:6px 0 0 0;color:var(--muted)">Check back later or contact the admin.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "home.html" %}
+{% load static %}
+
+{% block content %}
+  <h1>Active Notifications</h1>
+
+  {% if notifications %}
+    <ul style="list-style:none; padding:0;">
+      {% for n in notifications %}
+        <li style="border:1px solid #ddd; padding:12px; margin-bottom:8px; border-radius:6px;">
+          <h3 style="margin:0 0 6px 0;">{{ n.title }}</h3>
+          <p style="margin:0 0 6px 0;">{{ n.message|linebreaksbr }}</p>
+          <small>Posted {{ n.created_at|date:"M d, Y H:i" }}</small>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>There are no active notifications.</p>
+  {% endif %}
+{% endblock %}

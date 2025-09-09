@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Create Room</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+    <style>
+      :root{--bg:#f5f6fb;--card:#fff;--muted:#617589;--text:#0f172a;--border:#e6e9ef;--accent:#0f172a;--radius:12px;font-family:"Public Sans","Noto Sans",system-ui,Arial}
+      *{box-sizing:border-box}
+      body{margin:0;background:var(--bg);color:var(--text);font-family:inherit}
+      header{background:#fff;border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+      header h1{margin:0;font-size:18px}
+      .container{max-width:1100px;margin:20px auto;padding:18px}
+
+      .back{display:inline-block;margin-bottom:12px;background:var(--card);padding:8px 10px;border-radius:8px;border:1px solid var(--border);text-decoration:none;color:var(--text)}
+
+      .layout{display:block;align-items:center}
+      .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+      .card h2{margin-top:0}
+
+      label{display:block;margin-bottom:6px;color:var(--muted);font-weight:600}
+      .field{margin-bottom:12px}
+      input[type="text"], input[type="number"], select, input[type="file"]{
+        padding:10px;border-radius:8px;border:1px solid var(--border);width:100%;font-size:14px;outline:none;background:#fff
+      }
+      input[type="file"]{padding:8px}
+      .hint{font-size:13px;color:var(--muted);margin-top:6px}
+      button{padding:10px;border-radius:8px;border:0;background:var(--accent);color:white;cursor:pointer;margin-top:6px;width:100%}
+
+      .errors{background:#fff0f0;border:1px solid #ffd5d5;color:#9a1f1f;padding:12px;border-radius:8px;margin-bottom:12px}
+      .errors ul{margin:0;padding-left:18px}
+
+      @media (max-width:940px){.layout{grid-template-columns:1fr}.container{padding:12px}}
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Create Room</h1>
+      <div>
+        <a class="back" href="{% url 'rooms_list' %}"> Back to Rooms List</a>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="layout">
+          <div class="card">
+            <h2>Create Room</h2>
+
+            {% if errors %}
+              <div class="errors">
+                <strong>There were problems with your submission:</strong>
+                <ul>
+                  {% for err in errors %}
+                    <li>{{ err }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+
+              <div class="field">
+                <label for="room_number">Room Number</label>
+                <input id="room_number" name="room_number" required type="text" value="{{ request.POST.room_number|default_if_none:'' }}">
+              </div>
+
+              <div class="field">
+                <label for="block_number">Block Number</label>
+                <input id="block_number" name="block_number" required type="text" value="{{ request.POST.block_number|default_if_none:'' }}">
+              </div>
+
+              <div class="field">
+                <label for="capacity">Capacity</label>
+                <input id="capacity" name="capacity" type="number" min="1" value="{{ request.POST.capacity|default:1 }}">
+              </div>
+
+              <div class="field">
+                <label for="type">Type</label>
+                <select id="type" name="type">
+                  {% for val, label in type_choices %}
+                    <option value="{{ val }}" {% if request.POST.type == val %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                  {% for val, label in status_choices %}
+                    <option value="{{ val }}" {% if request.POST.status == val %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="room_rent">Room Rent (₹)</label>
+                <input id="room_rent" name="room_rent" value="{{ request.POST.room_rent|default:'0.00' }}" step="0.01" type="number">
+              </div>
+
+              <div class="field">
+                <label for="image">Image (optional)</label>
+                <input id="image" name="image" type="file" accept="image/*">
+                <div class="hint">Optional. Allowed types: images. Max size depends on server settings.</div>
+              </div>
+
+              <div>
+                <button type="submit">Create</button>
+              </div>
+            </form>
+          </div>
+
+
+      </div>
+    </main>
+  </body>
+</html>
