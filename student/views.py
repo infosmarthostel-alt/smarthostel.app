@@ -11,43 +11,55 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect
 from django.utils.dateparse import parse_date
-
+from django.db.models import Count
 from myadmin.models import Complaint, Meal, Notification, Weekday
 from .models import Student, Room, login as LoginModel
-
+from django.db import models
 def s_home(request):
     if request.session.get('sid') == 'out':
         return HttpResponse("<script>alert('please login');window.location='/'</script>")
 
     student = _get_student_from_session(request)
+    if not student:
+        # handle case where student is not found (optional)
+        return HttpResponse("<script>alert('Session error');window.location='/'</script>")
+
     notifications = Notification.objects.filter(is_active=True).order_by('-created_at')
 
-    room = student.room if student and student.room else None
+    room = student.room if student.room else None
     today = timezone.localdate()
-    weekday_num = today.weekday()  # 0 = Monday ... 6 = Sunday
-
-    # get all meals matching today's weekday
+    weekday_num = today.weekday()
     meals_qs = Meal.objects.filter(weekday=weekday_num).order_by('meal_type', 'meal_name')
-
-    # group by meal_type (dict: meal_type -> [Meal, ...])
     grouped = defaultdict(list)
     for m in meals_qs:
         grouped[m.meal_type].append(m)
 
-    # readable weekday name (using Weekday enum)
     try:
         weekday_name = Weekday(weekday_num).name.title()
     except Exception:
-        weekday_name = today.strftime('%A')  # fallback
+        weekday_name = today.strftime('%A')
 
-    # --- ROOMMATES: other students in same room (exclude current student) ---
-    if room:
-        # use related_name 'students' from Room model
-        roommates_qs = room.students.exclude(student_id=student.student_id).order_by('name')
-        # optionally prefetch/select related fields if you will display related objects
-        # roommates_qs = roommates_qs.select_related('login')  # example, if needed
-    else:
-        roommates_qs = Student.objects.none()
+    roommates_qs = (room.students.exclude(student_id=student.student_id).order_by('name')
+                    if room else Student.objects.none())
+
+    # ----------- Complaint statistics for this student -----------
+    complaints_qs = Complaint.objects.filter(student=student)
+
+    total_complaints = complaints_qs.count()
+
+    # Optional: breakdown by status – very useful on the dashboard
+    complaints_by_status = dict(
+        complaints_qs.values('status')
+        .annotate(count=models.Count('status'))
+        .values_list('status', 'count')
+    )
+
+    # If you prefer direct counts:
+    open_complaints = complaints_qs.filter(status='open').count()
+    in_progress_complaints = complaints_qs.filter(status='in_progress').count()
+    resolved_complaints = complaints_qs.filter(status='resolved').count()
+
+    # -----------------------------------------------------------
 
     return render(request, "home.html", {
         'student': student,
@@ -57,14 +69,17 @@ def s_home(request):
         'weekday_name': weekday_name,
         'meals_by_type': dict(grouped),
         'roommates': roommates_qs,
+
+        'total_complaints': total_complaints,
+        'open_complaints': open_complaints,
+        'in_progress_complaints': in_progress_complaints,
+        'resolved_complaints': resolved_complaints,
+        'complaints_by_status': complaints_by_status,  # e.g., {'open': 2, 'resolved': 5}
     })
 
-from django.db.models import Count
-
-# add this helper view
 def room_programme_counts(request):
-    programme = request.GET.get('programme')  # may be None or empty
-    # Get counts in a single DB query (efficient)
+    programme = request.GET.get('programme')  
+
     if programme:
         qs = (
             Student.objects
@@ -365,15 +380,10 @@ def change_password(request):
 
 
 def meals_today(request):
-    """
-    Render meals for today's weekday.
-    Groups results by meal_type for easy display.
-    """
-    # Use timezone-aware local date so it respects TIME_ZONE and USE_TZ
-    today = timezone.localdate()
-    weekday_num = today.weekday()  # 0 = Monday ... 6 = Sunday
 
-    # get all meals matching today's weekday
+    today = timezone.localdate()
+    weekday_num = today.weekday() 
+    student = _get_student_from_session(request)
     meals_qs = Meal.objects.filter(weekday=weekday_num).order_by('meal_type', 'meal_name')
 
     # group by meal_type (dict: meal_type -> [Meal, ...])
@@ -381,13 +391,14 @@ def meals_today(request):
     for m in meals_qs:
         grouped[m.meal_type].append(m)
 
-    # readable weekday name (using Weekday enum)
+
     try:
         weekday_name = Weekday(weekday_num).name.title()
     except Exception:
-        weekday_name = today.strftime('%A')  # fallback
+        weekday_name = today.strftime('%A')  
 
     context = {
+        'student':student,
         'weekday_num': weekday_num,
         'weekday_name': weekday_name,
         'meals_by_type': dict(grouped),
@@ -396,10 +407,6 @@ def meals_today(request):
 
 
 def notifications_list(request):
-    """
-    Render a list of notifications.
-    By default show active notifications first, newest first.
-    """
     notifications = Notification.objects.filter(is_active=True).order_by('-created_at')
     context = {
         'notifications': notifications,
@@ -452,4 +459,5 @@ def student_complaints_list(request):
         return redirect(reverse('login'))
 
     complaints = student.complaints.all()
-    return render(request, 'complaints_list.html', {'complaints': complaints})
+    student = _get_student_from_session(request)
+    return render(request, 'complaints_list.html', {'complaints': complaints, 'student':student }) 

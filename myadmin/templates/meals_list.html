@@ -16,6 +16,10 @@
     tbody td { display:block; padding:10px 0; }
     tbody tr { border-bottom:1px dashed var(--border); padding:8px 0; }
   }
+  .msg{margin:8px 0;padding:10px 12px;border-radius:8px;border:1px solid transparent}
+  .msg-success{color:#14532d;background:#ecfdf5;border-color:#bbf7d0}
+  .msg-error{color:#7f1d1d;background:#fff1f2;border-color:#fecaca}
+  .pic-preview img { height:80px; border-radius:10px; display:block; margin-bottom:6px; }
 </style>
 
 <div class="page-head">
@@ -28,6 +32,11 @@
     <a class="btn" href="{% url 'admin_add_meal' %}">+ Add meal</a>
   </div>
 </div>
+{% if messages %}
+{% for msg in messages %}
+    <p class="{% if msg.tags == 'error' %}msg msg-error{% else %}msg msg-success{% endif %}">{{ msg }}</p>
+{% endfor %}
+{% endif %}
 
 <div class="card full" role="region" aria-label="Meals list">
   <form method="get" class="filters" role="search" aria-label="Filter meals">

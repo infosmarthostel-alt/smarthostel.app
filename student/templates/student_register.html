@@ -1,127 +1,192 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Student Registration</title>
   <link rel="icon" type="image/png" href="/static/favicon.png">
   <style>
-    /* -----------------------------
-       Theme variables (colors, sizes)
-       ------------------------------*/
-    :root{
+    :root {
       --bg: #ffffff;
       --muted: #617589;
       --text: #111418;
       --border: #dbe0e6;
       --surface: #f0f2f4;
       --accent: #111418;
-      --radius-xl: 16px;
+      --radius: 12px;
       --gap: 16px;
       --max-width: 960px;
-      --container-padding-x: 40px; /* matches your px-40 */
-      font-family: "Public Sans", "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --container-padding-x: 20px;
+      font-family: "Public Sans", "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
-    /* Reset & layout helpers (keeps layout identical to Tailwind markup) */
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--text)}
-    a{text-decoration:none;color:inherit}
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+    a { text-decoration: none; color: inherit; }
 
-    .size-full{width:100%;}
-    .min-h-screen{min-height:100vh}
+    .layout-container { display: flex; flex-direction: column; min-height: 100vh; }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px var(--container-padding-x);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    fieldset{
+      border: none;
+    }
+    header .brand { display: flex; align-items: center; gap: 10px; flex-shrink: 1; }
+    header .brand svg { width: 32px; height: 32px; }
+    header h2 { font-size: 18px; margin: 0; font-weight: 700; letter-spacing: -0.3px; }
 
-    .layout-container{display:flex;flex-direction:column;min-height:100vh}
-    header{display:flex;align-items:center;justify-content:space-between;padding:12px 40px;border-bottom:1px solid var(--border);}
+    header .right {       
+      padding: 6px 16px;
+      border: none;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      font-weight: 500;
+      font-size: 16px;
+      cursor: pointer; }
 
-    /* header left */
-    header .brand{display:flex;align-items:center;gap:7px}
-    header .brand svg{width:30px;height:30px}
-    header h2{font-size:18px;margin:0;font-weight:700;letter-spacing:-0.3px}
+    .page-wrap {
+      flex: 1;
+      padding: 20px var(--container-padding-x);
+      display: flex;
+      justify-content: center;
+    }
+    .layout-content-container { max-width: var(--max-width); width: 100%; }
 
-    /* header right */
-    header .right{display:flex;align-items:center;gap:24px}
-    header .right .links{display:flex;gap:20px;align-items:center}
-    header .right .links a{font-size:14px;font-weight:500;color:var(--text)}
-
-    /* logout button */
-    .btn-logout{display:inline-flex;align-items:center;justify-content:center;min-width:84px;height:40px;padding:0 16px;border-radius:12px;background:var(--surface);font-weight:700}
-
-    /* avatar */
-    .avatar{width:40px;height:40px;border-radius:999px;background-size:cover;background-position:center;flex-shrink:0}
-
-    /* content area */
-    .page-wrap{padding:20px var(--container-padding-x);display:flex;justify-content:center}
-    .layout-content-container{max-width:var(--max-width);width:100%;}
-
-    h3{margin:20px 0 8px 0;font-size:16px;font-weight:700}
-
-    /* hostel info grid */
-    .hostel-grid{padding:8px;display:inline;}
-    .info-row{display:grid;grid-template-columns:200px 1fr;padding:18px 0;border-top:1px solid var(--border);align-items:center}
-    .info-label{color:var(--muted);font-size:14px}
-    .info-value{font-size:14px}
-
-    /* announcement card */
-    .announcement{display:flex;gap:16px;align-items:stretch}
-    .announcement .card-text{flex:2}
-    .announcement .card-media{flex:1;border-radius:12px;background-size:cover;background-position:center;height:120px}
-
-    /* academic card */
-    .cards{display:flex;gap:16px}
-    .card{flex:1;min-width:158px;border-radius:12px;padding:18px;border:1px solid var(--border)}
-    .card p:first-child{margin:0;font-weight:500}
-    .card p:last-child{margin:8px 0 0 0;font-size:22px;font-weight:700}
-
-    /* Quick access tabs */
-    .quick-access{border-bottom:1px solid var(--border);padding:0 16px}
-    .tabs{display:flex;gap:40px}
-    .tab-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;border-bottom:3px solid transparent;cursor:pointer}
-    .tab-btn svg{width:24px;height:24px}
-    .tab-btn .label{font-size:14px;font-weight:700;color:var(--muted)}
-    .tab-btn.active{border-bottom-color:var(--accent)}
-    .tab-btn.active .label{color:var(--accent)}
-
-    /* Tab panels */
-    .tab-panels{padding:18px}
-    .tab-panel{display:none}
-    .tab-panel.active{display:block}
-
-    /* responsive */
-    @media (max-width:900px){
-      .hostel-grid{grid-template-columns:1fr}
-      .info-row{grid-template-columns:1fr}
-      header{padding:12px 20px}
-      .page-wrap{padding:12px}
+    .form-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
 
-    .size-4 {display: flex;}
 
-    /* ---- page specific ---- */
-    .page-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .form-card{border-radius:12px;border:1px solid var(--border);padding:18px;margin-top:18px;background:#fff}
-    fieldset{border:0;padding:0;margin:0}
-    legend{font-weight:700;margin-bottom:12px}
-    .form-grid{display:grid;grid-template-columns:220px 1fr;gap:12px 24px;padding:8px 0;align-items:center}
-    .form-row{display:flex;gap:12px;align-items:center}
-    label{display:block;font-size:14px}
-
-    input[type="text"], input[type="number"], input[type="email"], input[type="date"], input[type="password"], select, input[type="file"]{
-      width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;background:transparent;font-size:14px
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px 20px;
+      align-items: start;
     }
 
-    .room-list{display:flex;flex-direction:column;gap:12px}
-    .room-card{padding:12px;border-radius:10px;border:1px solid var(--border);display:flex;gap:12px;align-items:center}
-    .room-meta{font-size:13px;color:var(--muted)}
-    .room-thumb img{width:120px;border-radius:8px;object-fit:cover}
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
 
-    .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:18px}
-    button[type="submit"]{padding:10px 16px;border-radius:10px;border:0;background:var(--accent);color:white;font-weight:700}
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="date"],
+    input[type="password"],
+    select,
+    input[type="file"] {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 16px;
+      background: #fff;
+    }
 
-    /* table small adjustments (kept from original) */
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ddd; padding: 8px; }
-    th { background: #f0f0f0; }
+    select { height: 48px; }
 
+    legend {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding: 0;
+    }
+
+    hr {
+      margin: 28px 0;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+
+    .room-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .room-card {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .room-card label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+      margin: 0;
+    }
+    .room-card input[type="radio"] {
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+    .room-meta {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .room-thumb img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+    button[type="submit"] {
+      padding: 13px 28px;
+      border: none;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      min-height: 50px;
+      cursor: pointer;
+    }
+
+    @media (min-width: 640px) {
+      :root { --container-padding-x: 40px; }
+      .form-grid { grid-template-columns: 220px 1fr; }
+      .room-card { flex-direction: row; align-items: center; }
+      .room-thumb img { width: 160px; height: 120px; margin-top: 0; }
+    }
+
+    @media (max-width: 480px) {
+      header { padding: 12px 16px; }
+      header .right { justify-content: space-between; }
+      .form-card { padding: 10px; border: none; }
+      button[type="submit"] { width: 100%; }
+      .page-wrap{ border: none; padding: 0;}
+    }
+    ul { padding-left: 20px; margin: 12px 0; }
+    ul li { color: #d32f2f; }
   </style>
 </head>
 <body class="layout-container">
@@ -130,46 +195,27 @@
     <div class="brand">
       <div class="size-4" aria-hidden="true">
         <svg viewBox="0 -6.83 55.484 55.484" xmlns="http://www.w3.org/2000/svg">
-
           <g transform="translate(-819.325 -209.09)">
-          
-          <path d="M830.341,217.538a19.3,19.3,0,0,0-4.606,12.57,19.006,19.006,0,0,0,14.6,18.648" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <path d="M833.052,246.26a5.987,5.987,0,0,1,3.847,1.94.246.246,0,0,1,0,.335,4.866,4.866,0,0,1-7.725-.067.247.247,0,0,1,0-.336A5.979,5.979,0,0,1,833.052,246.26Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <path d="M826.455,239.3a6.123,6.123,0,0,1,2.948,3.19.244.244,0,0,1-.116.314,5.9,5.9,0,0,1-4.272.373,6.127,6.127,0,0,1-2.948-3.19.245.245,0,0,1,.117-.314A5.9,5.9,0,0,1,826.455,239.3Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <path d="M824.232,230.16a6.239,6.239,0,0,1,1.955,3.909.241.241,0,0,1-.2.268,5.905,5.905,0,0,1-4.2-.871,6.242,6.242,0,0,1-1.955-3.91.242.242,0,0,1,.2-.268A5.907,5.907,0,0,1,824.232,230.16Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <path d="M826.109,220.822a6.322,6.322,0,0,1,.1,4.392.236.236,0,0,1-.292.153,6.046,6.046,0,0,1-3.416-2.655,6.322,6.322,0,0,1-.1-4.392.236.236,0,0,1,.292-.153A6.046,6.046,0,0,1,826.109,220.822Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <path d="M833.948,214.106a6.091,6.091,0,0,1-3.1,3.037.234.234,0,0,1-.307-.118,6.317,6.317,0,0,1-.386-4.375,6.085,6.085,0,0,1,3.1-3.037.233.233,0,0,1,.307.118A6.31,6.31,0,0,1,833.948,214.106Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <path d="M863.793,217.538a19.3,19.3,0,0,1,4.606,12.57,19.006,19.006,0,0,1-14.6,18.648" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <path d="M861.082,246.26a5.987,5.987,0,0,0-3.847,1.94.246.246,0,0,0,0,.335,4.866,4.866,0,0,0,7.725-.067.246.246,0,0,0,0-.336A5.974,5.974,0,0,0,861.082,246.26Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <path d="M867.678,239.3a6.125,6.125,0,0,0-2.947,3.19.244.244,0,0,0,.116.314,5.9,5.9,0,0,0,4.272.373,6.127,6.127,0,0,0,2.948-3.19.245.245,0,0,0-.117-.314A5.9,5.9,0,0,0,867.678,239.3Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <path d="M869.9,230.16a6.239,6.239,0,0,0-1.955,3.909.241.241,0,0,0,.2.268,5.9,5.9,0,0,0,4.2-.871,6.241,6.241,0,0,0,1.955-3.91.242.242,0,0,0-.2-.268A5.907,5.907,0,0,0,869.9,230.16Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <path d="M868.025,220.822a6.322,6.322,0,0,0-.1,4.392.236.236,0,0,0,.292.153,6.046,6.046,0,0,0,3.416-2.655,6.322,6.322,0,0,0,.1-4.392.236.236,0,0,0-.292-.153A6.042,6.042,0,0,0,868.025,220.822Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <path d="M860.186,214.106a6.091,6.091,0,0,0,3.1,3.037.234.234,0,0,0,.307-.118,6.317,6.317,0,0,0,.386-4.375,6.086,6.086,0,0,0-3.1-3.037.233.233,0,0,0-.307.118A6.311,6.311,0,0,0,860.186,214.106Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <path d="M847.238,218.546l-9.83,10.137c-.1.1.069.236.069.378v10.352c0,.3-.208.947.088.947h19.56c.3,0,.352-.651.352-.947V229.061c0-.142.036-.277-.064-.378l-10.007-10.137C847.2,218.335,847.447,218.335,847.238,218.546Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-          
-          <rect width="6" height="7" rx="0.547" transform="translate(844.477 232.36)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          
-          <line y1="12.336" x2="12.564" transform="translate(834.674 218.546)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          
-          <line x1="12.564" y1="12.336" transform="translate(847.301 218.546)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          
+            <path d="M830.341,217.538a19.3,19.3,0,0,0-4.606,12.57,19.006,19.006,0,0,0,14.6,18.648" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <path d="M833.052,246.26a5.987,5.987,0,0,1,3.847,1.94.246.246,0,0,1,0,.335,4.866,4.866,0,0,1-7.725-.067.247.247,0,0,1,0-.336A5.979,5.979,0,0,1,833.052,246.26Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <path d="M826.455,239.3a6.123,6.123,0,0,1,2.948,3.19.244.244,0,0,1-.116.314,5.9,5.9,0,0,1-4.272.373,6.127,6.127,0,0,1-2.948-3.19.245.245,0,0,1,.117-.314A5.9,5.9,0,0,1,826.455,239.3Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <path d="M824.232,230.16a6.239,6.239,0,0,1,1.955,3.909.241.241,0,0,1-.2.268,5.905,5.905,0,0,1-4.2-.871,6.242,6.242,0,0,1-1.955-3.91.242.242,0,0,1,.2-.268A5.907,5.907,0,0,1,824.232,230.16Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <path d="M826.109,220.822a6.322,6.322,0,0,1,.1,4.392.236.236,0,0,1-.292.153,6.046,6.046,0,0,1-3.416-2.655,6.322,6.322,0,0,1-.1-4.392.236.236,0,0,1,.292-.153A6.046,6.046,0,0,1,826.109,220.822Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <path d="M833.948,214.106a6.091,6.091,0,0,1-3.1,3.037.234.234,0,0,1-.307-.118,6.317,6.317,0,0,1-.386-4.375,6.085,6.085,0,0,1,3.1-3.037.233.233,0,0,1,.307.118A6.31,6.31,0,0,1,833.948,214.106Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <path d="M863.793,217.538a19.3,19.3,0,0,1,4.606,12.57,19.006,19.006,0,0,1-14.6,18.648" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <path d="M861.082,246.26a5.987,5.987,0,0,0-3.847,1.94.246.246,0,0,0,0,.335,4.866,4.866,0,0,0,7.725-.067.246.246,0,0,0,0-.336A5.974,5.974,0,0,0,861.082,246.26Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <path d="M867.678,239.3a6.125,6.125,0,0,0-2.947,3.19.244.244,0,0,0,.116.314,5.9,5.9,0,0,0,4.272.373,6.127,6.127,0,0,0,2.948-3.19.245.245,0,0,0-.117-.314A5.9,5.9,0,0,0,867.678,239.3Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <path d="M869.9,230.16a6.239,6.239,0,0,0-1.955,3.909.241.241,0,0,0,.2.268,5.9,5.9,0,0,0,4.2-.871,6.241,6.241,0,0,0,1.955-3.91.242.242,0,0,0-.2-.268A5.907,5.907,0,0,0,869.9,230.16Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <path d="M868.025,220.822a6.322,6.322,0,0,0-.1,4.392.236.236,0,0,0,.292.153,6.046,6.046,0,0,0,3.416-2.655,6.322,6.322,0,0,0,.1-4.392.236.236,0,0,0-.292-.153A6.042,6.042,0,0,0,868.025,220.822Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <path d="M860.186,214.106a6.091,6.091,0,0,0,3.1,3.037.234.234,0,0,0,.307-.118,6.317,6.317,0,0,0,.386-4.375,6.086,6.086,0,0,0-3.1-3.037.233.233,0,0,0-.307.118A6.311,6.311,0,0,0,860.186,214.106Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <path d="M847.238,218.546l-9.83,10.137c-.1.1.069.236.069.378v10.352c0,.3-.208.947.088.947h19.56c.3,0,.352-.651.352-.947V229.061c0-.142.036-.277-.064-.378l-10.007-10.137C847.2,218.335,847.447,218.335,847.238,218.546Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
+            <rect width="6" height="7" rx="0.547" transform="translate(844.477 232.36)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <line y1="12.336" x2="12.564" transform="translate(834.674 218.546)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <line x1="12.564" y1="12.336" transform="translate(847.301 218.546)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
           </g>
-          
-          </svg>
+        </svg>
       </div>
-      <h2>Hostel Hostel - Register</h2>
+      <h2>Register</h2>
     </div>
 
     <div class="right">
@@ -181,9 +227,6 @@
 
   <div class="page-wrap">
     <main class="layout-content-container">
-
-     
-
       <div class="form-card">
 
         {% if messages %}
@@ -200,40 +243,41 @@
           <fieldset>
             <legend>Student info</legend>
             <div class="form-grid">
-              <div class="info-label">Name</div>
+              <div><label>Name</label></div>
               <div><input type="text" name="name" value="{{ post.name|default:'' }}" required></div>
 
-              <div class="info-label">Age</div>
+              <div><label>Age</label></div>
               <div><input type="number" name="age" value="{{ post.age|default:'' }}" min="1"></div>
 
-              <div class="info-label">Gender</div>
+              <div><label>Gender</label></div>
               <div>
                 <select name="gender">
                   <option value="">--</option>
-                  <option value="Male">Male</option>
+                  <option value="Male>Male</option>
                   <option value="Female">Female</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
 
-              <div class="info-label">Phone</div>
+              <div><label>Phone</label></div>
               <div><input type="text" name="phone" value="{{ post.phone|default:'' }}"></div>
 
-              <div class="info-label">Email</div>
+              <div><label>Email</label></div>
               <div><input type="email" name="email" value="{{ post.email|default:'' }}"></div>
 
-              <div class="info-label">Password</div>
-              <div><input type="password" name="password" required value="{{ post.password }}"></div>
+              <div><label>Password</label></div>
+              <div><input type="password" name="password" required></div>
 
-              <div class="info-label">Joined date</div>
+              <div><label>Joined date</label></div>
               <div><input type="date" name="joined_date" value="{{ post.joined_date|default:'' }}"></div>
 
-              <div class="info-label">Profile</div>
+              <div><label>Profile photo</label></div>
               <div><input type="file" name="profile"></div>
 
-              <div class="info-label">ID proof</div>
+              <div><label>ID proof</label></div>
               <div><input type="file" name="id_proof"></div>
-              <div class="info-label">Programme</div>
+
+              <div><label>Programme</label></div>
               <div>
                 <select name="programme" id="programme-select" required>
                   <option value="">-- Select programme --</option>
@@ -264,28 +308,28 @@
             </div>
           </fieldset>
 
-          <hr style="margin:18px 0;border:none;border-top:1px solid var(--border)">
+          <hr>
 
           <fieldset>
-            <legend>Parent / Contact</legend>
+            <legend>Parent / Emergency Contact</legend>
             <div class="form-grid">
-              <div class="info-label">Parent name</div>
+              <div><label>Parent name</label></div>
               <div><input type="text" name="parent_name" value="{{ post.parent_name|default:'' }}"></div>
 
-              <div class="info-label">Parent phone</div>
+              <div><label>Parent phone</label></div>
               <div><input type="text" name="parent_phone" value="{{ post.parent_phone|default:'' }}"></div>
 
-              <div class="info-label">Parent email</div>
+              <div><label>Parent email</label></div>
               <div><input type="email" name="parent_email" value="{{ post.parent_email|default:'' }}"></div>
             </div>
           </fieldset>
 
-          <hr style="margin:18px 0;border:none;border-top:1px solid var(--border)">
+          <hr>
 
           <fieldset>
             <legend>Address</legend>
             <div class="form-grid">
-              <div class="info-label">District</div>
+              <div><label>District</label></div>
               <div>
                 <select name="district">
                   <option value="">--</option>
@@ -297,37 +341,35 @@
                 </select>
               </div>
 
-              <div class="info-label">Pincode</div>
+              <div><label>Pincode</label></div>
               <div><input type="text" name="pincode" value="{{ post.pincode|default:'' }}"></div>
             </div>
           </fieldset>
 
-          <hr style="margin:18px 0;border:none;border-top:1px solid var(--border)">
+          <hr>
 
           <fieldset>
-            <legend>Choose preferred room (one-time, optional)</legend>
+            <legend>Choose preferred room (optional)</legend>
 
             <div class="room-list">
               {% for r in rooms %}
               <div class="room-card">
-                <div style="flex:1">
-                  <label class="form-row">
-                    <input type="radio" name="preferred_room" value="{{ r.instance.pk }}">
-                    <div style="margin-left:8px">
-                      <div><strong>Room: {{ r.instance.room_number }}</strong></div>
-                      <div class="room-meta">
-                        Type: {{ r.instance.type }} |
-                        Capacity: {{ r.instance.capacity }} |
-                        Occupied: {{ r.instance.occupied }} |
-                        Available: <strong>{{ r.available }}</strong> |
-                        Same programme in room: <strong class="same-count" data-room-id="{{ r.instance.pk }}">0</strong>
-                      </div>
+                <label class="form-row">
+                  <input type="radio" name="preferred_room" value="{{ r.instance.pk }}">
+                  <div style="flex:1">
+                    <div><strong>Room: {{ r.instance.room_number }}</strong></div>
+                    <div class="room-meta">
+                      Type: {{ r.instance.type }} |
+                      Capacity: {{ r.instance.capacity }} |
+                      Occupied: {{ r.instance.occupied }} |
+                      Available: <strong>{{ r.available }}</strong> |
+                      Same programme in room: <strong class="same-count" data-room-id="{{ r.instance.pk }}">0</strong>
                     </div>
-                  </label>
-                </div>
+                  </div>
+                </label>
 
                 {% if r.instance.image %}
-                  <div class="room-thumb"><img src="{{ r.instance.image.url }}" alt="room image"></div>
+                  <div class="room-thumb"><img src="{{ r.instance.image.url }}" alt="Room image"></div>
                 {% endif %}
               </div>
               {% endfor %}
@@ -339,23 +381,22 @@
           <div class="actions">
             <button type="submit">Register</button>
           </div>
-
         </form>
-
       </div>
-
     </main>
   </div>
+
+  <!-- JavaScript for live room count update (unchanged) -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const select = document.querySelector('select[name="programme"]');
       const apiUrl = "{% url 'room_programme_counts' %}";
-    
+
       function updateCountsForProgramme(programme) {
         const params = new URLSearchParams({ programme: programme || '' });
         fetch(apiUrl + '?' + params.toString())
           .then(resp => {
-            if (!resp.ok) throw new Error('Network response was not ok');
+            if (!resp.ok) throw new Error('Network error');
             return resp.json();
           })
           .then(data => {
@@ -365,24 +406,14 @@
               el.textContent = counts[rid] !== undefined ? counts[rid] : '0';
             });
           })
-          .catch(err => {
-            // silent fail (doesn't break registration); you can console.log for debugging
-            console.error('Failed to fetch room programme counts:', err);
-          });
+          .catch(err => console.error('Failed to fetch counts:', err));
       }
-    
+
       if (select) {
-        select.addEventListener('change', function () {
-          updateCountsForProgramme(this.value);
-        });
-    
-        // initial load if programme pre-selected (useful when re-rendering the form with post data)
-        if (select.value) {
-          updateCountsForProgramme(select.value);
-        }
+        select.addEventListener('change', () => updateCountsForProgramme(select.value));
+        if (select.value) updateCountsForProgramme(select.value);
       }
     });
-    </script>
-    
+  </script>
 </body>
 </html>

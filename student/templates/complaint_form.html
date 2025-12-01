@@ -1,5 +1,30 @@
 {% extends "home.html" %}
 {% block content %}
+<style>
+  .btn-box{
+    display:flex;gap:12px;align-items:center;margin-top:18px
+  }
+  .btn-box button{
+    padding:10px 14px;border-radius:10px;border:0;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:#1a1a1a;color:#fff
+  }
+  .btn-box a{
+    padding:10px 14px;border-radius:10px;border:1px solid #e6e9ee;color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:8px;margin-left:auto
+  }
+  @media (max-width: 768px) {
+    .btn-box button,a{
+      width: 100%;
+    }
+
+    .btn-box {
+      align-items: center;
+      flex-direction: column;
+  }
+
+  .btn-box button{
+    padding:14px 14px;
+  }
+  }
+</style>
 <div style="padding:28px 12px; background:transparent">
   <main style="max-width:960px;margin:0 auto">
     <div style="margin:0 0 12px;font-size:20px">
@@ -8,7 +33,9 @@
 
     {% if messages %}
       {% for msg in messages %}
-        <p style="padding:10px 12px;border-radius:10px;{% if msg.tags == 'error' %}background:#fff5f5;color:#ef4444;border:1px solid rgba(239,68,68,0.08){% else %}background:#f0fdf4;color:#10b981;border:1px solid rgba(16,185,129,0.08){% endif %}">{{ msg }}</p>
+      <p class="flash-message {% if msg.tags == 'error' %}flash-error{% else %}flash-success{% endif %}">
+        {{ msg }}
+    </p>
       {% endfor %}
     {% endif %}
 
@@ -59,11 +86,11 @@
               </label>
 
               <p style="color:#6b7280;font-size:13px;margin-top:8px">Attach photos or documents (optional). Max file size enforced by server.</p>
-
-              <div style="display:flex;gap:12px;align-items:center;margin-top:18px">
-                <button type="submit" style="padding:10px 14px;border-radius:10px;border:0;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:#1a1a1a;color:#fff">Submit Complaint</button>
-                <a href="{% url 's_home' %}" style="padding:10px 14px;border-radius:10px;border:1px solid #e6e9ee;color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:8px">Cancel</a>
-                <a href="{% url 'student_complaints_list' %}" style="padding:10px 14px;border-radius:10px;border:1px solid #e6e9ee;color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:8px;margin-left:auto">View Your Complaints</a>
+              
+              <div class="btn-box">
+                <button type="submit">Submit Complaint</button>
+                <a href="{% url 's_home' %}" >Cancel</a>
+                <a href="{% url 'student_complaints_list' %}" >View Your Complaints</a>
               </div>
             </div>
           </div>

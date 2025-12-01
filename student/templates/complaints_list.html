@@ -1,12 +1,20 @@
 {% extends "home.html" %}
 {% block content %}
+<style>
+  .status-pending { background:#fff7ed; color:#f59e0b; padding: 3px 8px;  border:1px solid #f59e0b; border-radius: 15px; }
+  .status-open { background:#dadada; color:#3d3d3d; padding: 3px 8px;  border:1px solid #3d3d3d; border-radius: 15px; }
+  .status-in_progress { background:#eef2ff; color:#0f62fe;padding: 3px 8px;  border:1px solid #0f62fe; border-radius: 15px; }
+  .status-closed { background:#f0fdf4; color:#10b981;padding: 3px 8px;  border:1px solid #10b981; border-radius: 15px;}
+  </style>
 <div style="padding:28px 12px; background:transparent">
   <main style="max-width:960px;margin:0 auto">
     <div style="margin:0 0 12px;font-size:20px"><h2 style="margin:0">My Complaints</h2></div>
 
     {% if messages %}
       {% for msg in messages %}
-        <p style="padding:10px 12px;border-radius:10px;{% if msg.tags == 'error' %}background:#fff5f5;color:#ef4444;border:1px solid rgba(239,68,68,0.08){% else %}background:#f0fdf4;color:#10b981;border:1px solid rgba(16,185,129,0.08){% endif %}">{{ msg }}</p>
+      <p class="flash-message {% if msg.tags == 'error' %}flash-error{% else %}flash-success{% endif %}">
+        {{ msg }}
+    </p>
       {% endfor %}
     {% endif %}
 
@@ -19,11 +27,11 @@
               <div style="color:#6b7280;font-size:13px;margin-bottom:6px">
                 <strong>Type:</strong> {{ c.get_complaint_type_display }} &nbsp; • &nbsp;
                 <strong>Status:</strong> 
-                <span style="font-size:12px;padding:6px 8px;border-radius:999px;{% if c.status == 'pending' %}background:#fff7ed;color:#f59e0b;border:1px solid rgba(245,158,11,0.08);{% elif c.status == 'in_progress' %}background:#eef2ff;color:#0f62fe;border:1px solid rgba(15,98,254,0.06);{% else %}background:#f0fdf4;color:#10b981;border:1px solid rgba(16,185,129,0.06);{% endif %}">{{ c.get_status_display }}</span> &nbsp; • &nbsp;
+                <span class="status-badge status-{{ c.status }}">{{ c.get_status_display }}</span>
                 <strong>Submitted:</strong> <time datetime="{{ c.created_at|date:'c' }}">{{ c.created_at|date:"SHORT_DATETIME_FORMAT" }}</time>
               </div>
 
-              <div style="display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden">{{ c.description|linebreaks }}</div>
+              <div style="display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;line-clamp:intial;overflow:hidden">{{ c.description|linebreaks }}</div>
 
               {% if c.admin_response %}
                 <div style="background:#f0fdf4;color:#10b981;border-radius:8px;padding:10px;margin-top:10px">

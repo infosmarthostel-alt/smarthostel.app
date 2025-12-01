@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Secure Transaction Gateway</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            border: 5px solid #e5e7eb;
+            border-top: 5px solid #1f2937;
+            animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+        .success-bg-gradient {
+            background-image: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        }
+        .font-inter { font-family: 'Inter', sans-serif; }
+        .status-pop-in {
+            animation: popIn 0.5s ease-out forwards;
+        }
+        @keyframes popIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen font-inter p-6">
+
+    <div id="paymentCard" class="bg-white p-6 sm:p-10 rounded-3xl shadow-2xl shadow-gray-300/50 max-w-md w-full text-center transition-all duration-700">
+        
+        <!-- Processing State -->
+        <div id="processingVisuals" class="flex flex-col items-center">
+            <div class="relative w-20 h-20 mb-4">
+                <div id="statusSpinner" class="spinner absolute top-0 left-0 w-full h-full rounded-full"></div>
+                <div class="flex items-center justify-center w-full h-full bg-gray-50 rounded-full border border-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </div>
+            </div>
+            <h1 id="mainTitle" class="text-3xl sm:text-4xl font-extrabold text-gray-800 tracking-tight">Securing Transaction...</h1>
+            <p class="text-gray-500 mt-2 text-base">Hi <span id="userName">Student</span>, please do not close this window.</p>
+        </div>
+
+        <!-- Success State (hidden initially) -->
+        <div id="successVisuals" class="hidden flex flex-col items-center">
+            <div class="success-bg-gradient w-20 h-20 rounded-full flex items-center justify-center mb-4 shadow-xl shadow-emerald-500/30">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <path d="m9 11 3 3L22 4"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-emerald-600 tracking-tight">Payment Confirmed!</h1>
+        </div>
+
+        <!-- Transaction Details -->
+        <div class="mt-8 p-6 bg-gray-50 rounded-xl border border-gray-100 divide-y divide-gray-200">
+            <div class="flex justify-between items-center py-2">
+                <span class="text-gray-500 font-medium">To:</span>
+                <span class="text-gray-700 font-semibold">Hostel Management</span>
+            </div>
+            <div class="flex justify-between items-center py-2">
+                <span class="text-gray-500 font-medium">Amount:</span>
+                <span id="displayAmount" class="text-4xl text-gray-800 font-black">₹0</span>
+            </div>
+            <div class="flex justify-between items-center py-2">
+                <span class="text-gray-500 font-medium">Transaction ID:</span>
+                <span id="displayTxId" class="text-gray-700 font-mono text-sm">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Live Status Log -->
+        <div class="mt-8 min-h-[50px]">
+            <p id="statusMessage" class="text-sm text-gray-700 font-medium opacity-0"></p>
+        </div>
+    </div>
+
+    <script>
+        // === Extract real data from URL (passed by Django view) ===
+        const urlParams = new URLSearchParams(window.location.search);
+        const tx_id = urlParams.get('tx_id') || 'TX000000';
+        const name = urlParams.get('name') || 'Student';
+        const amount = urlParams.get('amount') || '0';
+
+        // Update UI with real values
+        document.getElementById('userName').textContent = name;
+        document.getElementById('displayAmount').textContent = `₹${parseFloat(amount).toLocaleString('en-IN')}`;
+        document.getElementById('displayTxId').textContent = tx_id;
+
+        const statuses = [
+            "1. Initiating secure channel and handshake protocol...",
+            "2. Encrypting payment payload (AES-256 GCM)...",
+            "3. Authorizing transaction with banking partner...",
+            "4. Verifying account credentials and availability of funds...",
+            "5. Confirmation received. Finalizing settlement...",
+            "6. Transaction complete. Generating digital receipt."
+        ];
+
+        const paymentCardEl = document.getElementById('paymentCard');
+        const processingVisualsEl = document.getElementById('processingVisuals');
+        const successVisualsEl = document.getElementById('successVisuals');
+        const statusSpinnerEl = document.getElementById('statusSpinner');
+        const statusMessageEl = document.getElementById('statusMessage');
+        let statusIndex = 0;
+
+        const showNextStatus = () => {
+            if (statusIndex < statuses.length) {
+                statusMessageEl.classList.remove('status-pop-in');
+                void statusMessageEl.offsetWidth;
+                statusMessageEl.textContent = statuses[statusIndex];
+                statusMessageEl.classList.add('status-pop-in');
+                statusIndex++;
+                setTimeout(showNextStatus, 2200);
+            } else {
+                // === SUCCESS STATE ===
+                paymentCardEl.classList.remove('shadow-2xl', 'shadow-gray-300/50');
+                paymentCardEl.classList.add('shadow-3xl', 'shadow-emerald-500/50', 'scale-[1.02]');
+
+                processingVisualsEl.classList.add('hidden');
+                successVisualsEl.classList.remove('hidden');
+                statusSpinnerEl.style.display = 'none';
+
+                statusMessageEl.classList.remove('status-pop-in');
+                statusMessageEl.classList.add('text-lg', 'font-bold', 'text-emerald-700', 'status-pop-in');
+                statusMessageEl.innerHTML = `Transaction ID: ${tx_id}<br>You will be redirected in 3 seconds.`;
+
+                // === MARK AS PAID (fake success) ===
+                fetch('/mark-upi-paid/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ tx_id: tx_id })
+                });
+
+                // === AUTO REDIRECT ===
+                setTimeout(() => {
+                    window.location.href = '/student/pay/?success=1';
+                }, 3000);
+            }
+        };
+
+        // Helper to get CSRF token (required for POST in Django)
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        setTimeout(showNextStatus, 1500);
+    </script>
+</body>
+</html>

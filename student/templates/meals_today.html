@@ -3,50 +3,160 @@
 
 {% block content %}
 
-<div style="display: flex; flex-direction:column">
+<div style="display: flex; flex-direction: column; min-height: 100vh; width: 90%;">
 
-  <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 4px;flex-wrap:wrap">
-    <p style="font-size:32px;font-weight:700;margin:0;">Meals for {{ weekday_name }}</p>
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 8px; flex-wrap: wrap; gap: 12px;">
+    <p style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2;">
+      Meals for {{ weekday_name }}
+    </p>
   </div>
-  <div class="layout-content-container" style="display: flex; gap:6px;">
+
+  <div class="layout-content-container" style="padding: 0 12px; flex: 1;">
     
-  
     {% if meals_by_type %}
       {% for meal_type, meals in meals_by_type.items %}
-        <section style="margin-bottom: 24px;">
-          <h3 style="margin:6px 0 12px 0;font-size:16px;font-weight:700;">{{ meal_type }}</h3>
-  
-          <div style="display:flex; flex-wrap:wrap; gap:16px;">
+        <section style="margin-bottom: 32px;">
+          <h3 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 700; color: var(--text);">
+            {{ meal_type }}
+          </h3>
+
+          <!-- Responsive grid: 1 column on mobile, 2+ on larger screens -->
+          <div style="
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+          ">
             {% for meal in meals %}
-              <article class="card" style="width:240px;padding:12px;border-radius:8px;border:1px solid var(--border);display:flex;flex-direction:column;">
+              <article class="card" style="
+                width: 100%;
+                padding: 14px;
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                background: var(--card-bg, #fff);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                display: flex;
+                flex-direction: column;
+                transition: transform 0.2s, box-shadow 0.2s;
+              "
+              onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)'"
+              onmouseout="this.style.transform=''; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.05)'">
+
                 {% if meal.meal_pic %}
-                  <div style="height:120px;overflow:hidden;border-radius:8px;margin-bottom:10px;background:#f7f7f7;">
-                    <img src="{{ meal.meal_pic.url }}" alt="{{ meal.meal_name }}" style="width:100%;height:100%;object-fit:cover;display:block;">
+                  <div style="
+                    height: 140px;
+                    overflow: hidden;
+                    border-radius: 10px;
+                    margin-bottom: 12px;
+                    background: #f0f0f0;
+                  ">
+                    <img src="{{ meal.meal_pic.url }}"
+                         alt="{{ meal.meal_name }}"
+                         loading="lazy"
+                         style="
+                           width: 100%;
+                           height: 100%;
+                           object-fit: cover;
+                           display: block;
+                           transition: transform 0.3s;
+                         "
+                         onmouseover="this.style.transform='scale(1.05)'"
+                         onmouseout="this.style.transform='scale(1)'">
                   </div>
                 {% endif %}
-  
-                <div style="flex:1;min-height:0;">
-                  <strong style="display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ meal.meal_name }}</strong>
-                  <p style="margin:6px 0 0 0;color:var(--muted);font-size:14px;">{{ meal.description|default:"No description" }}</p>
+
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                  <strong style="
+                    display: block;
+                    font-size: 16px;
+                    margin-bottom: 6px;
+                    color: var(--text);
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                  ">
+                    {{ meal.meal_name }}
+                  </strong>
+                  <p style="
+                    margin: 0 0 12px 0;
+                    color: var(--muted);
+                    font-size: 14px;
+                    line-height: 1.5;
+                    overflow: hidden;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 3;
+                    line-clamp:initial;
+                    -webkit-box-orient: vertical;
+                  ">
+                    {{ meal.description|default:"No description available" }}
+                  </p>
                 </div>
-  
-                <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
-                  <small style="color:var(--muted);font-size:13px;">₹{{ meal.rate }}</small>
-                  <small style="color:var(--muted);font-size:12px;">{{ meal.created_at|date:"M d, Y" }}</small>
+
+                <div style="
+                  margin-top: auto;
+                  padding-top: 12px;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  border-top: 1px solid var(--border-light, #eee);
+                  font-size: 13px;
+                  color: var(--muted);
+                ">
+                  <span style="font-weight: 600; color: var(--primary, #e67e22); font-size: 15px;">
+                    ₹{{ meal.rate }}
+                  </span>
+                  <span style="font-size: 12px;">
+                    {{ meal.created_at|date:"M d, Y" }}
+                  </span>
                 </div>
               </article>
             {% endfor %}
           </div>
         </section>
       {% endfor %}
+
     {% else %}
-      <div class="card" style="padding:18px;border-radius:8px;">
-        <p style="margin:0;font-weight:700">No meals scheduled for today.</p>
-        <p style="margin:6px 0 0 0;color:var(--muted)">Check back later or contact the admin.</p>
+      <div class="card" style="
+        padding: 32px 20px;
+        border-radius: 12px;
+        text-align: center;
+        background: var(--card-bg, #fff);
+        border: 1px solid var(--border);
+        margin: 20px auto;
+        max-width: 500px;
+      ">
+        <p style="margin: 0; font-weight: 700; font-size: 18px; color: var(--text);">
+          No meals scheduled for today.
+        </p>
+        <p style="margin: 10px 0 0 0; color: var(--muted); font-size: 15px;">
+          Check back later or contact the admin.
+        </p>
       </div>
     {% endif %}
   </div>
-
 </div>
+
+<!-- Mobile-optimized CSS Grid Fallback for very small screens -->
+<style>
+  @media (max-width: 480px) {
+    .layout-content-container > section > div {
+      grid-template-columns: 1fr !important;
+    }
+    .card {
+      padding: 16px !important;
+    }
+    h3 {
+      font-size: 19px !important;
+    }
+    .layout-content-container {
+      padding: 0 8px !important;
+    }
+  }
+
+  @media (min-width: 481px) and (max-width: 768px) {
+    .layout-content-container > section > div {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
 
 {% endblock %}

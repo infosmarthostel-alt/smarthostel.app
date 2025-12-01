@@ -38,6 +38,10 @@
       .errors ul{margin:0;padding-left:18px}
 
       @media (max-width:940px){.layout{grid-template-columns:1fr}.container{padding:12px}}
+      .msg{margin:8px 0;padding:10px 12px;border-radius:8px;border:1px solid transparent}
+      .msg-success{color:#14532d;background:#ecfdf5;border-color:#bbf7d0}
+      .msg-error{color:#7f1d1d;background:#fff1f2;border-color:#fecaca}
+      .pic-preview img { height:80px; border-radius:10px; display:block; margin-bottom:6px; }
     </style>
   </head>
   <body>
@@ -53,16 +57,12 @@
           <div class="card">
             <h2>Create Room</h2>
 
-            {% if errors %}
-              <div class="errors">
-                <strong>There were problems with your submission:</strong>
-                <ul>
-                  {% for err in errors %}
-                    <li>{{ err }}</li>
-                  {% endfor %}
-                </ul>
-              </div>
+            {% if messages %}
+            {% for msg in messages %}
+                <p class="{% if msg.tags == 'error' %}msg msg-error{% else %}msg msg-success{% endif %}">{{ msg }}</p>
+            {% endfor %}
             {% endif %}
+    
 
             <form method="post" enctype="multipart/form-data">
               {% csrf_token %}

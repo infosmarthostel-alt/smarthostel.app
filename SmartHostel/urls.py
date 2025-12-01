@@ -1,6 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
 from student import views as sv
 from myadmin import views as mv
 from payment import views as pv
@@ -8,7 +9,7 @@ from payment import views as pv
 
 urlpatterns = [
     path('',mv.index,name='home'),
-    path('health',mv.health_check,name='home'),
+    path('health',mv.health_check),
     path('register', sv.student_register, name='student_register'),
     path('login_post', mv.login_post, name="login_post"),
     path('login_return', mv.login_return, name="login_return"),
@@ -37,6 +38,7 @@ urlpatterns = [
     path('student/pay/', pv.payment_page, name='student_pay_page'),
     path('student/create-transaction/', pv.create_transaction, name='create_transaction'),
     path('student/finalize-transaction/', pv.finalize_transaction, name='finalize_transaction'),
+    path('upi-processing/', pv.upi_processing, name='upi_processing'),
     
     # Meals
     path('admin/meals/', mv.meals_list, name='admin_meals_list'),
@@ -63,6 +65,18 @@ urlpatterns = [
     # admin
     path('admin/complaints/', mv.admin_complaints_list, name='admin_complaints_list'),
     path('admin/complaints/<int:pk>/', mv.admin_complaint_detail, name='admin_complaint_detail'),
+    
+    path('student/service-worker.js',
+         TemplateView.as_view(template_name="sw_student.js", content_type='application/javascript'),
+         name='sw-student'),
+    path('admin/service-worker.js',
+         TemplateView.as_view(template_name="sw_admin.js", content_type='application/javascript'),
+         name='sw-admin'),
+
+    path('offline.html',
+         TemplateView.as_view(template_name="offline.html", content_type='text/html'),
+         name='offline'),
+    
 
     
 ]

@@ -2,11 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Smart Hostel</title>
-    <link rel="icon" type="image/png" href="/static/favicon.png">
-
-    <!-- keep font links as you had them -->
+    <link rel="icon" type="image/png" href="/media/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
     <link
       rel="stylesheet"
@@ -18,9 +16,6 @@
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
 
     <style>
-      /* -----------------------------
-         Theme variables (colors, sizes)
-         ------------------------------*/
       :root{
         --bg: #ffffff;
         --muted: #617589;
@@ -34,8 +29,27 @@
         --container-padding-x: 40px; /* matches your px-40 */
         font-family: "Public Sans", "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
       }
-
-      /* Reset & layout helpers (keeps layout identical to Tailwind markup) */
+      .flash-message {
+        padding: 10px 12px;
+        border-radius: 10px;
+        margin: 8px 0;
+        font-weight: 500;
+    }
+    
+    .flash-error {
+        background: #fff5f5;
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.08);
+    }
+    
+    .flash-success {
+        background: #f0fdf4;
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.08);
+    }
+    .msg{margin:8px 0;padding:10px 12px;border-radius:8px;border:1px solid transparent}
+    .msg-success{color: #14532d;background: #ecfdf5;border-color: #bbf7d0}
+    .msg-error{color: #7f1d1d;background: #fff1f2;border-color:#fecaca}
       *{box-sizing:border-box}
       html,body{height:100%;margin:0;background:var(--bg);color:var(--text)}
       a{text-decoration:none;color:inherit}
@@ -94,6 +108,30 @@
       .tab-btn.active{border-bottom-color:var(--accent)}
       .tab-btn.active .label{color:var(--accent)}
 
+      /* Hide outline by default, show only when user is tabbing */
+.tab-btn {
+  outline: none !important;
+}
+
+/* Modern focus indicator — only when keyboard is used */
+.user-is-tabbing .tab-btn:focus {
+  outline: 3px solid #4d90fe;
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+/* Or use :focus-visible (even better if supported) */
+@supports selector(:focus-visible) {
+  .tab-btn:focus-visible {
+    outline: 3px solid #4d90fe;
+    outline-offset: 4px;
+    border-radius: 8px;
+  }
+  .tab-btn:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
       /* Tab panels */
       .tab-panels{padding:18px}
       .tab-panel{display:none}
@@ -104,15 +142,299 @@
         .hostel-grid{grid-template-columns:1fr}
         .info-row{grid-template-columns:1fr}
         header{padding:12px 20px}
-        .page-wrap{padding:12px}
+        .page-wrap{padding:12px; width: 100%; }
       }
 
       .size-4 {
         display: flex;
     }
+
+    /* Existing styles remain... add these new ones */
+
+/* Desktop nav - hidden on mobile */
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Mobile menu button - hidden on desktop */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--text);
+}
+
+/* Mobile Navigation Drawer */
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 280px;
+  height: 100vh;
+  background: var(--bg);
+  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  z-index: 1000;
+  transition: left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-nav.active {
+  left: 0;
+}
+.mobile-nav[aria-hidden="false"] {
+  left: 0;
+}
+
+.mobile-nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 3px solid var(--surface);
+}
+
+.mobile-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--text);
+}
+
+.mobile-links {
+  padding: 16px 0;
+  flex: 1;
+}
+
+.mobile-links a {
+  display: block;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  transition: background 0.2s;
+}
+
+.mobile-links a:hover,
+.mobile-links a:focus {
+  background: var(--surface);
+}
+
+.mobile-logout {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  color: #d32f2f !important;
+  font-weight: 600 !important;
+}
+
+/* Overlay */
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+.mobile-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Responsive Behavior */
+@media (max-width: 768px) {
+  header {
+    padding: 12px 20px;
+  }
+  
+  .desktop-nav {
+    display: none;
+  }
+  
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  header .brand svg {
+    width: 28px;
+    height: 28px;
+  }
+  
+  header h2 {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 10px 16px;
+  }
+  
+  .mobile-nav {
+    width: 100%;
+  }
+}
+    </style>
+    <style>
+      /* Mobile-first: Horizontal scroll on small screens */
+.meals-scroll-container {
+  overflow: hidden;
+  border-radius: 12px;
+  position: relative;
+}
+
+.meals-grid {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 8px 0 16px 0; /* Extra bottom padding for scroll */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.meals-grid::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Optional: Fade edges to indicate scrollability */
+.meals-scroll-container::before,
+.meals-scroll-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 16px;
+  width: 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.meals-scroll-container::before {
+  left: 0;
+  background: linear-gradient(to right, var(--background), transparent);
+}
+
+.meals-scroll-container::after {
+  right: 0;
+  background: linear-gradient(to left, var(--background), transparent);
+}
+
+/* Meal card styling - compact & professional */
+.meal-card {
+  flex: 0 0 280px;           /* Fixed width for consistency */
+  max-width: 280px;
+  background: var(--card-bg, #fff);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease;
+}
+
+.meal-card:hover {
+  transform: translateY(-4px);
+}
+
+.meal-image {
+  height: 160px;
+  overflow: hidden;
+}
+
+.meal-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.meal-content {
+  padding: 14px 16px 12px;
+}
+
+.meal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.meal-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: initial;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.meal-footer {
+  padding: 10px 16px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.meal-price {
+  font-weight: 700;
+  color: #e67e22;
+  font-size: 16px;
+}
+
+.meal-date {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Desktop: Switch back to grid layout */
+@media (min-width: 768px) {
+  .meals-scroll-container {
+    overflow: visible;
+  }
+  
+  .meals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    overflow: visible;
+    padding: 0;
+  }
+  
+  .meals-scroll-container::before,
+  .meals-scroll-container::after {
+    display: none;
+  }
+  
+  .meal-card {
+    flex: none;
+  }
+}
     </style>
   </head>
   <body>
+
     <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden" style='font-family: "Public Sans", "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
         <header>
@@ -157,21 +479,53 @@
             </div>
             <h2>Hostel Portal</h2>
           </div>
-
-          <div class="right">
-            <div class="links" role="navigation" aria-label="top links">
+          <nav class="desktop-nav">
+            <div class="links" role="navigation" aria-label="main navigation" style=" display:contents">
               <a href="{% url 's_home' %}">Home</a>
               <a href="{% url 'meals_today' %}">Today Meals</a>
-              <a href="{% url 'student_submit_complaint'%}">Complaint</a>
+              <a href="{% url 'student_submit_complaint' %}">Complaint</a>
               <a href="{% url 'student_pay_page' %}">Fees</a>
               <a href="{% url 'profile_view' %}">View Profile</a>
             </div>
-
-            <a href="{% url 'logout' %}"><div class="btn-logout" role="button"><span>Logout</span></div></a>
-
-            <a href="{% url 'profile_view' %}"><div class="avatar" style='background-image: url("{{ student.profile_pic.url }}");' aria-hidden="true"></div></a>
-          </div>
+            <div class="user-actions">
+              <a href="{% url 'logout' %}"><div class="btn-logout" role="button"><span>Logout</span></div></a>
+              <a href="{% url 'profile_view' %}">
+                <div class="avatar" style='background-image: url("{{ student.profile_pic.url }}");' aria-hidden="true"></div>
+              </a>
+            </div>
+          </nav>
+        
+          <!-- Mobile Menu Button -->
+          <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+            <svg class="hamburger" viewBox="0 0 24 24" width="28" height="28">
+              <path fill="currentColor" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+            </svg>
+          </button>
         </header>
+        <nav id="mobile-nav" class="mobile-nav" aria-hidden="true">
+          <div class="mobile-nav-header">
+            <a href="{% url 'profile_view' %}">
+              <div class="mobile-avatar" style='background-image: url("{{ student.profile_pic.url }}");'></div>
+            </a>
+            <button class="mobile-close-btn" aria-label="Close menu">
+              <svg viewBox="0 0 24 24" width="28" height="28">
+                <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+              </svg>
+            </button>
+          </div>
+          <div class="mobile-links">
+            <a href="{% url 's_home' %}">Home</a>
+            <a href="{% url 'meals_today' %}">Today Meals</a>
+            <a href="{% url 'student_submit_complaint' %}">Complaint</a>
+            <a href="{% url 'student_pay_page' %}">Fees</a>
+            <a href="{% url 'profile_view' %}">View Profile</a>
+            <a href="{% url 'logout' %}" class="mobile-logout">Logout</a>
+          </div>
+        </nav>
+        
+        <!-- Overlay -->
+        <div class="mobile-overlay"></div>
+
         
         <div class="page-wrap">
           {% block content %}
@@ -179,6 +533,7 @@
             <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 4px;flex-wrap:wrap">
               <p style="font-size:32px;font-weight:700;margin:0;">Welcome, {{ student.name }}</p>
             </div>
+
 
             {% if room %}
 
@@ -214,13 +569,6 @@
               <h3>You have not been assigned a room yet.</h3>
             {% endif %}
 
-            <!-- <h3>Academic Performance</h3>
-            <div class="cards">
-              <div class="card">
-                <p>GPA</p>
-                <p>3.8</p>
-              </div>
-            </div> -->
             <h3>Notifications</h3>
     
               {% if notifications %}
@@ -249,162 +597,202 @@
                   <p style="font-size:13px; margin:6px 0 0 0;color:var(--muted)">You're all caught up.</p>
                 </div>
               {% endif %}
+              {% if messages %}
+              {% for msg in messages %}
+                <p class="{% if msg.tags == 'error' %}msg msg-error{% else %}msg msg-success{% endif %}">{{ msg }}</p>
+              {% endfor %}
+            {% endif %}
             
               <h3>Quick Access</h3>
               <div class="quick-access">
                 <div class="tabs" role="tablist" aria-label="Quick access tabs">
-                  <div class="tab-btn active" role="tab" tabindex="0" aria-selected="true" data-tab-target="meals">
-                    <!-- ForkKnife icon -->
+                  <div class="tab-btn active" role="tab" tabindex="0" aria-selected="false" data-tab-target="roommates">
+                    <svg viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1-7.37-4.89,8,8,0,0,1,0-6.22A8,8,0,0,1,192,112a24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.84,8,57,57,0,0,0-98.16,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"/></svg>
+                    <div class="label">Room Mates</div>
+                  </div>
+                  
+                  <div class="tab-btn" role="tab" tabindex="0" aria-selected="true" data-tab-target="meals">
                     <svg viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M216,40V224a8,8,0,0,1-16,0V176H152a8,8,0,0,1-8-8,268.75,268.75,0,0,1,7.22-56.88c9.78-40.49,28.32-67.63,53.63-78.47A8,8,0,0,1,216,40Zm-96.11-1.31a8,8,0,1,0-15.78,2.63L111.89,88H88V40a8,8,0,0,0-16,0V88H48.11l7.78-46.68a8,8,0,1,0-15.78-2.63l-8,48A8.17,8.17,0,0,0,32,88a48.07,48.07,0,0,0,40,47.32V224a8,8,0,0,0,16,0V135.32A48.07,48.07,0,0,0,128,88a8.17,8.17,0,0,0-.11-1.31Z"/></svg>
                     <div class="label">Today's Meals</div>
                   </div>
   
                   <div class="tab-btn" role="tab" tabindex="0" aria-selected="false" data-tab-target="complaint">
-                    <!-- Megaphone icon -->
                     <svg viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M240,120a48.05,48.05,0,0,0-48-48H152.2c-2.91-.17-53.62-3.74-101.91-44.24A16,16,0,0,0,24,40V200a16,16,0,0,0,26.29,12.25c37.77-31.68,77-40.76,93.71-43.3v31.72A16,16,0,0,0,151.12,214l11,7.33A16,16,0,0,0,186.5,212l11.77-44.36A48.07,48.07,0,0,0,240,120ZM40,199.93V40h0c42.81,35.91,86.63,45,104,47.24v65.48C126.65,155,82.84,164.07,40,199.93Zm131,8,0,.11-11-7.33V168h21.6ZM192,152H160V88h32a32,32,0,1,1,0,64Z"/></svg>
                     <div class="label">Complaint</div>
                   </div>
   
                   <div class="tab-btn" role="tab" tabindex="0" aria-selected="false" data-tab-target="fees">
-                    <!-- Currency icon -->
                     <svg viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"/></svg>
                     <div class="label">Fees</div>
                   </div>
-  
-                  <div class="tab-btn" role="tab" tabindex="0" aria-selected="false" data-tab-target="roommates">
-                    <!-- Users icon -->
-                    <svg viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1-7.37-4.89,8,8,0,0,1,0-6.22A8,8,0,0,1,192,112a24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.84,8,57,57,0,0,0-98.16,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"/></svg>
-                    <div class="label">Room Mates</div>
-                  </div>
+
                 </div>
   
                 <div class="tab-panels" style="padding: 0;">
+
                   <div id="meals" class="tab-panel active">
-                    
-                    <div class="layout-content-container" style="margin-top:17px; display: flex; gap:6px;">
+                    <div class="layout-content-container" style="margin-top:17px;">
                       
-                    
                       {% if meals_by_type %}
                         {% for meal_type, meals in meals_by_type.items %}
-                          <section style="margin-bottom: 24px;">
-                            <h3 style="margin:6px 0 12px 0;font-size:16px;font-weight:700;">{{ meal_type }}</h3>
-                    
-                            <div style="display:flex; flex-wrap:wrap; gap:16px;">
-                              {% for meal in meals %}
-                                <article class="card" style="width:240px;padding:12px;border-radius:8px;border:1px solid var(--border);display:flex;flex-direction:column;">
-                                  {% if meal.meal_pic %}
-                                    <div style="height:120px;overflow:hidden;border-radius:8px;margin-bottom:10px;background:#f7f7f7;">
-                                      <img src="{{ meal.meal_pic.url }}" alt="{{ meal.meal_name }}" style="width:100%;height:100%;object-fit:cover;display:block;">
+                          <section style="margin-bottom: 32px;">
+                            <h3 style="margin:0 0 16px 0; font-size:18px; font-weight:700; color:var(--text);">
+                              {{ meal_type }}
+                            </h3>
+                  
+                            <!-- Responsive scrollable container -->
+                            <div class="meals-scroll-container">
+                              <div class="meals-grid">
+                                {% for meal in meals %}
+                                  <article class="meal-card">
+                                    {% if meal.meal_pic %}
+                                      <div class="meal-image">
+                                        <img src="{{ meal.meal_pic.url }}" alt="{{ meal.meal_name }}" loading="lazy">
+                                      </div>
+                                    {% endif %}
+                  
+                                    <div class="meal-content">
+                                      <strong class="meal-title">{{ meal.meal_name }}</strong>
+                                      <p class="meal-desc">{{ meal.description|default:"No description" }}</p>
                                     </div>
-                                  {% endif %}
-                    
-                                  <div style="flex:1;min-height:0;">
-                                    <strong style="display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ meal.meal_name }}</strong>
-                                    <p style="margin:6px 0 0 0;color:var(--muted);font-size:14px;">{{ meal.description|default:"No description" }}</p>
-                                  </div>
-                    
-                                  <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
-                                    <small style="color:var(--muted);font-size:13px;">₹{{ meal.rate }}</small>
-                                    <small style="color:var(--muted);font-size:12px;">{{ meal.created_at|date:"M d, Y" }}</small>
-                                  </div>
-                                </article>
-                              {% endfor %}
+                  
+                                    <div class="meal-footer">
+                                      <span class="meal-price">₹{{ meal.rate }}</span>
+                                      <span class="meal-date">{{ meal.created_at|date:"M d, Y" }}</span>
+                                    </div>
+                                  </article>
+                                {% endfor %}
+                              </div>
                             </div>
                           </section>
                         {% endfor %}
                       {% else %}
-                        <div class="card" style="padding:18px;border-radius:8px;">
-                          <p style="margin:0;font-weight:700">No meals scheduled for today.</p>
-                          <p style="margin:6px 0 0 0;color:var(--muted)">Check back later or contact the admin.</p>
+                        <div class="empty-card">
+                          <p style="margin:0;font-weight:700;font-size:16px;">No meals scheduled for today.</p>
+                          <p style="margin:8px 0 0 0;color:var(--muted);font-size:14px;">
+                            Check back later or contact the admin.
+                          </p>
                         </div>
                       {% endif %}
                     </div>
                   </div>
-  
-                  <div id="complaint" class="tab-panel">
+
+
+                  <div id="complaint" class="tab-panel" style="margin-top: 15px;" >
                     <strong>Complaint</strong>
-                    <p style="color:var(--muted)">You have 2 open complaints. <a href="#">View complaints</a></p>
+                    <p style="color:var(--muted)">You have {{ open_complaints }} open complaint{{ open_complaints|pluralize }}. <a href="{% url 'student_complaints_list' %}">View complaint{{ open_complaints|pluralize }}</a></p>
+                    <ul>
+                        <li>In Progress: <strong>{{ in_progress_complaints }}</strong></li>
+                        <li>Total: <strong>{{ total_complaints }}</strong></li>
+                        <li>Resolved: <strong>{{ resolved_complaints }}</strong></li>
+                    </ul>
                   </div>
   
-                  <div id="fees" class="tab-panel">
+                  <div id="fees" class="tab-panel" style="margin-top: 15px;">
                     <strong>Fees</strong>
                     <p style="color:var(--muted)">{{ room.room_rent  }}rs &nbsp;<a href="{% url 'student_pay_page' %}">Pay now</a></p>
                   </div>
   
-                  <div id="roommates" class="tab-panel">
+                  <div id="roommates" class="tab-panel" style="margin-top: 15px;">
                     {% if roommates.exists %}
-                      <div class="roommate-list" style="display:flex;flex-direction:column;gap:.6rem;">
+                      <div class="roommate-list" style="display:flex;flex-direction:column;gap:.8rem;padding:0.5rem 0;">
                         {% for r in roommates %}
-                          <div class="roommate-row" style="display:flex;align-items:center;gap:.75rem;padding:.6rem;border-radius:6px;background:#fff;border:1px solid #eee;">
-                            {# optional profile thumbnail if you store profile_pic #}
-                            <div class="avatar" style="width:44px;height:44px;border-radius:50%;overflow:hidden;background:#f2f2f2;display:flex;align-items:center;justify-content:center;font-weight:600;">
+                          <div class="roommate-row" 
+                               style="display:flex;align-items:center;gap:.75rem;padding:1rem;background:#fff;border-radius:15px;
+                                      border:1px solid #eee;box-shadow:0 1px 3px rgba(0,0,0,0.05);
+                                      flex-wrap:wrap; /* Important for mobile */">
+                            
+                            <!-- Avatar -->
+                            <div class="avatar" style="width:52px;height:52px;border-radius:50%;overflow:hidden;background:#f0f0f0;
+                                                        flex-shrink:0;display:flex;align-items:center;justify-content:center;
+                                                        font-weight:700;font-size:1.1rem;color:#555;">
                               {% if r.profile_pic %}
                                 <img src="{{ r.profile_pic.url }}" alt="{{ r.name }}" style="width:100%;height:100%;object-fit:cover;">
                               {% else %}
-                                {{ r.name|slice:":1" }}
+                                {{ r.name|slice:":2"|upper }}
                               {% endif %}
                             </div>
 
-                            <div style="flex:1;min-width:0;">
-                              <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-                                <div style="min-width:0;">
-                                  <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                                    {{ r.name }}
+                            <div style="flex:1;min-width:0;width:100%;">
+                              <div style="display:flex;flex-direction:column;gap:0.35rem;">
+                                <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+                                  <div style="min-width:0;flex:1;">
+                                    <div style="font-weight:600;font-size:1.05rem; white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                      {{ r.name }}
+                                    </div>
+                                    <div style="font-size:0.88rem;color:#555;margin-top:0.15rem;">
+                                      {{ r.programme|default:"—" }} · Joined: {{ r.joined_date|date:"d M Y" }}
+                                    </div>
                                   </div>
-                                  <div style="font-size:.85rem;color:#666;">
-                                    {{ r.programme|default:"—" }} · Joined: {{ r.joined_date|date:"d M Y" }}
+                  
+                                  <div style="display:flex;gap:10px;align-items:center;flex-shrink:0;">
+                                    {% if r.phone %}
+                                      <a href="tel:{{ r.phone }}" title="Call {{ r.name }}"
+                                         style="display:flex;padding:8px;border-radius:50%;">
+                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M21.97 18.33C21.97 18.69 21.89 19.06 21.72 19.42C21.55 19.78 21.33 20.12 21.04 20.44C20.55 20.98 20.01 21.37 19.4 21.62C18.8 21.87 18.15 22 17.45 22C16.43 22 15.34 21.76 14.19 21.27C13.04 20.78 11.89 20.12 10.75 19.29C9.6 18.45 8.51 17.52 7.47 16.49C6.44 15.45 5.51 14.36 4.68 13.22C3.86 12.08 3.2 10.94 2.72 9.81C2.24 8.67 2 7.58 2 6.54C2 5.86 2.12 5.21 2.36 4.61C2.6 4 2.98 3.44 3.51 2.94C4.15 2.31 4.85 2 5.59 2C5.87 2 6.15 2.06 6.4 2.18C6.66 2.3 6.89 2.48 7.07 2.74L9.39 6.01C9.57 6.26 9.7 6.49 9.79 6.71C9.88 6.92 9.93 7.13 9.93 7.32C9.93 7.56 9.86 7.8 9.72 8.03C9.59 8.26 9.4 8.5 9.16 8.74L8.4 9.53C8.29 9.64 8.24 9.77 8.24 9.93C8.24 10.01 8.25 10.08 8.27 10.16C8.3 10.24 8.33 10.3 8.35 10.36C8.53 10.69 8.84 11.12 9.28 11.64C9.73 12.16 10.21 12.69 10.73 13.22C11.27 13.75 11.79 14.24 12.32 14.69C12.84 15.13 13.27 15.43 13.61 15.61C13.66 15.63 13.72 15.66 13.79 15.69C13.87 15.72 13.95 15.73 14.04 15.73C14.21 15.73 14.34 15.67 14.45 15.56L15.21 14.81C15.46 14.56 15.7 14.37 15.93 14.25C16.16 14.11 16.39 14.04 16.64 14.04C16.83 14.04 17.03 14.08 17.25 14.17C17.47 14.26 17.7 14.39 17.95 14.56L21.26 16.91C21.52 17.09 21.7 17.3 21.81 17.55C21.91 17.8 21.97 18.05 21.97 18.33Z" stroke="currentColor" stroke-width="2" />
+                                          <path  d="M20.0002 4H15.2002M20.0002 4V8.8V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                          </svg>
+                                      </a>
+
+                                      <a href="https://wa.me/{{ r.phone|cut:' ' }}" target="_blank" title="Message {{ r.name }} on WhatsApp"
+                                         style="display:flex;padding:8px;border-radius:50%;">
+                                        <svg fill="currentColor" height="20" width="20" version="1.1" id="Icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve"><g id="WA_Logo">
+                                        <g>
+                                          <path fill-rule="evenodd" clip-rule="evenodd" d="M20.5,3.5C18.25,1.25,15.2,0,12,0C5.41,0,0,5.41,0,12c0,2.11,0.65,4.11,1.7,5.92
+                                            L0,24l6.33-1.55C8.08,23.41,10,24,12,24c6.59,0,12-5.41,12-12C24,8.81,22.76,5.76,20.5,3.5z M12,22c-1.78,0-3.48-0.59-5.01-1.49
+                                            l-0.36-0.22l-3.76,0.99l1-3.67l-0.24-0.38C2.64,15.65,2,13.88,2,12C2,6.52,6.52,2,12,2c2.65,0,5.2,1.05,7.08,2.93S22,9.35,22,12
+                                            C22,17.48,17.47,22,12,22z M17.5,14.45c-0.3-0.15-1.77-0.87-2.04-0.97c-0.27-0.1-0.47-0.15-0.67,0.15
+                                            c-0.2,0.3-0.77,0.97-0.95,1.17c-0.17,0.2-0.35,0.22-0.65,0.07c-0.3-0.15-1.26-0.46-2.4-1.48c-0.89-0.79-1.49-1.77-1.66-2.07
+                                            c-0.17-0.3-0.02-0.46,0.13-0.61c0.13-0.13,0.3-0.35,0.45-0.52s0.2-0.3,0.3-0.5c0.1-0.2,0.05-0.37-0.02-0.52
+                                            C9.91,9.02,9.31,7.55,9.06,6.95c-0.24-0.58-0.49-0.5-0.67-0.51C8.22,6.43,8.02,6.43,7.82,6.43S7.3,6.51,7.02,6.8
+                                            C6.75,7.1,5.98,7.83,5.98,9.3c0,1.47,1.07,2.89,1.22,3.09c0.15,0.2,2.11,3.22,5.1,4.51c0.71,0.31,1.27,0.49,1.7,0.63
+                                            c0.72,0.23,1.37,0.2,1.88,0.12c0.57-0.09,1.77-0.72,2.02-1.42c0.25-0.7,0.25-1.3,0.17-1.42C18,14.68,17.8,14.6,17.5,14.45z"/>
+                                        </g>
+                                      </g>
+                                      </svg>
+                                      </a>
+                                    {% endif %}
+                
+                                    {% if r.email %}
+                                      <a href="mailto:{{ r.email }}" title="Email {{ r.name }}"
+                                         style="display:flex;padding:8px;border-radius:50%;">
+                                         <svg width="25" height="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                          <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                          </svg>
+                                      </a>
+                                    {% endif %}
                                   </div>
                                 </div>
-
-                                <div style="text-align:right;display: flex;gap: 12px; align-items: center;">
-                                  {# phone / email quick actions #}
-                                  {% if r.phone %}
-                                    <div style="font-size:.85rem;"><a href="tel:{{ r.phone }}" title="Call {{ r.name }}"><svg height="15" width="15" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-                                      viewBox="0 0 512 512"  xml:space="preserve">
-                                   <style type="text/css">
-                                     .st0{fill:#323232;}
-                                   </style>
-                                   <g>
-                                     <path class="st0" d="M94.811,21.696c-35.18,22.816-42.091,94.135-28.809,152.262c10.344,45.266,32.336,105.987,69.42,163.165
-                                       c34.886,53.79,83.557,102.022,120.669,129.928c47.657,35.832,115.594,58.608,150.774,35.792
-                                       c17.789-11.537,44.218-43.058,45.424-48.714c0,0-15.498-23.896-18.899-29.14l-51.972-80.135
-                                       c-3.862-5.955-28.082-0.512-40.386,6.457c-16.597,9.404-31.882,34.636-31.882,34.636c-11.38,6.575-20.912,0.024-40.828-9.142
-                                       c-24.477-11.262-51.997-46.254-73.9-77.947c-20.005-32.923-40.732-72.322-41.032-99.264c-0.247-21.922-2.341-33.296,8.304-41.006
-                                       c0,0,29.272-3.666,44.627-14.984c11.381-8.392,26.228-28.286,22.366-34.242l-51.972-80.134c-3.401-5.244-18.899-29.14-18.899-29.14
-                                       C152.159-1.117,112.6,10.159,94.811,21.696z"/>
-                                   </g>
-                                   </svg></a></div>
+                  
+                                <div style="font-size:0.85rem;color:#666;margin-top:0.5rem;display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+                                  {% if r.parent_name or r.parent_phone %}
+                                    <span>
+                                      {% if r.parent_name %}Parent: {{ r.parent_name }}{% endif %}
+                                      {% if r.parent_phone %} · <a href="tel:{{ r.parent_phone }}" style="color:#0066cc;">{{ r.parent_phone }}</a>{% endif %}
+                                    </span>
                                   {% endif %}
-                                  {% if r.email %}
-                                    <div style="font-size:.85rem;"><a href="mailto:{{ r.email }}" title="Email {{ r.name }}">
-                                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <rect  fill="white"/>
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M5.96802 4H18.032C18.4706 3.99999 18.8491 3.99998 19.1624 4.02135C19.4922 4.04386 19.8221 4.09336 20.1481 4.22836C20.8831 4.53284 21.4672 5.11687 21.7716 5.85195C21.9066 6.17788 21.9561 6.50779 21.9787 6.83762C22 7.15088 22 7.52936 22 7.96801V16.032C22 16.4706 22 16.8491 21.9787 17.1624C21.9561 17.4922 21.9066 17.8221 21.7716 18.1481C21.4672 18.8831 20.8831 19.4672 20.1481 19.7716C19.8221 19.9066 19.4922 19.9561 19.1624 19.9787C18.8491 20 18.4706 20 18.032 20H5.96801C5.52936 20 5.15088 20 4.83762 19.9787C4.50779 19.9561 4.17788 19.9066 3.85195 19.7716C3.11687 19.4672 2.53284 18.8831 2.22836 18.1481C2.09336 17.8221 2.04386 17.4922 2.02135 17.1624C1.99998 16.8491 1.99999 16.4706 2 16.032V7.96802C1.99999 7.52937 1.99998 7.15088 2.02135 6.83762C2.04386 6.50779 2.09336 6.17788 2.22836 5.85195C2.53284 5.11687 3.11687 4.53284 3.85195 4.22836C4.17788 4.09336 4.50779 4.04386 4.83762 4.02135C5.15088 3.99998 5.52937 3.99999 5.96802 4ZM4.31745 6.27777C4.68114 5.86214 5.3129 5.82002 5.72854 6.1837L11.3415 11.095C11.7185 11.4249 12.2815 11.4249 12.6585 11.095L18.2715 6.1837C18.6871 5.82002 19.3189 5.86214 19.6825 6.27777C20.0462 6.69341 20.0041 7.32517 19.5885 7.68885L13.9755 12.6002C12.8444 13.5899 11.1556 13.5899 10.0245 12.6002L4.41153 7.68885C3.99589 7.32517 3.95377 6.69341 4.31745 6.27777Z" fill="#323232"/>
-                                        </svg>
-                                    </a></div>
+                  
+                                  {% if r.id_proof.url %}
+                                    <a href="{{ r.id_proof.url }}" target="_blank"
+                                       style="padding:6px 12px;background:#e3f2fd;color:#1976d2;border-radius:20px;
+                                              font-size:0.82rem;text-decoration:none;border:1px solid #bbdefb;">
+                                      ID Proof
+                                    </a>
                                   {% endif %}
                                 </div>
-                              </div>
-
-                              {# optional extra info, e.g. parent contact (hide if empty) #}
-                              <div style="font-size:.82rem;color:#777;margin-top:.25rem;">
-                                {% if r.parent_name %}Parent: {{ r.parent_name }}{% endif %}
-                                {% if r.parent_phone %} · <a href="tel:{{ r.parent_phone }}" style="color:inherit;text-decoration:none;">{{ r.parent_phone }}</a>{% endif %}
-                                <a href="{{ r.id_proof.url }}" style="padding: 4px 9px; background: #dddddd; border-radius: 10px;display: inline-flex
-;
-    align-content: center;
-    align-items: center;
-    border: 1px solid #c4c4c4;">proof</a>
                               </div>
                             </div>
                           </div>
                         {% endfor %}
                       </div>
-
+                  
                     {% else %}
-                      <p class="muted">No other students are currently assigned to this room.</p>
+                      <p class="muted" style="text-align:center;color:#888;padding:2rem 1rem;">
+                        No other students are currently assigned to this room.
+                      </p>
                     {% endif %}
-
                   </div>
                 </div>
               </div>
@@ -426,53 +814,134 @@
     </div>
     
     <script>
-      // Quick access tab switching: unobtrusive, keyboard accessible
-      (function(){
+
+      (function () {
         const tabButtons = document.querySelectorAll('.tab-btn');
         const panels = document.querySelectorAll('.tab-panel');
+      
+        let userHasTabbed = false;
+      
 
-        function activate(targetId, clickedBtn){
-          // buttons
-          tabButtons.forEach(b=>{
+        function handleFirstTab(e) {
+          if (e.key === 'Tab') {
+            document.body.classList.add('user-is-tabbing');
+            window.removeEventListener('keydown', handleFirstTab);
+          }
+        }
+        window.addEventListener('keydown', handleFirstTab);
+      
+        // Optional: reset on mouse use
+        document.body.addEventListener('mousedown', () => {
+          document.body.classList.remove('user-is-tabbing');
+          window.addEventListener('keydown', handleFirstTab);
+        });
+      
+        function activate(targetId, clickedBtn) {
+          tabButtons.forEach(b => {
             const isActive = b.dataset.tabTarget === targetId;
             b.classList.toggle('active', isActive);
             b.setAttribute('aria-selected', String(isActive));
-            if(isActive) b.focus({preventScroll:true});
+            b.setAttribute('tabindex', isActive ? '0' : '-1'); 
+      
+            if (isActive) {
+              setTimeout(() => {
+                b.focus({ preventScroll: true });
+              }, 0);
+            }
           });
-
-          // panels
-          panels.forEach(p=>{
+      
+          panels.forEach(p => {
             p.classList.toggle('active', p.id === targetId);
+            p.setAttribute('aria-hidden', String(p.id !== targetId));
           });
         }
-
-        tabButtons.forEach(btn=>{
-          btn.addEventListener('click', ()=>{
+      
+        tabButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
             activate(btn.dataset.tabTarget, btn);
           });
-
-          btn.addEventListener('keydown', (e)=>{
-            if(e.key === 'Enter' || e.key === ' '){
+      
+          btn.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               activate(btn.dataset.tabTarget, btn);
             }
-            // left/right arrow navigation
-            if(e.key === 'ArrowRight' || e.key === 'ArrowLeft'){
+      
+            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
               e.preventDefault();
               const nodes = Array.from(tabButtons);
               const idx = nodes.indexOf(btn);
-              const nextIdx = e.key === 'ArrowRight' ? (idx+1)%nodes.length : (idx-1+nodes.length)%nodes.length;
-              nodes[nextIdx].click();
+              const nextIdx = e.key === 'ArrowRight'
+                ? (idx + 1) % nodes.length
+                : (idx - 1 + nodes.length) % nodes.length;
+              activate(nodes[nextIdx].dataset.tabTarget, nodes[nextIdx]);
             }
           });
         });
-
-        // ensure first is active on load
-        if(tabButtons.length){
+      
+        if (tabButtons.length) {
           const initial = document.querySelector('.tab-btn.active') || tabButtons[0];
-          activate(initial.dataset.tabTarget, initial);
+
+          tabButtons.forEach(b => {
+            const isActive = b === initial;
+            b.classList.toggle('active', isActive);
+            b.setAttribute('aria-selected', String(isActive));
+            b.setAttribute('tabindex', isActive ? '0' : '-1');
+          });
+      
+          panels.forEach(p => {
+            const isActive = p.id === initial.dataset.tabTarget;
+            p.classList.toggle('active', isActive);
+            p.setAttribute('aria-hidden', String(!isActive));
+          });
         }
       })();
     </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/student/service-worker.js', { scope: '/student/' })
+          .then(()=> console.log('student SW registered'))
+          .catch(e=> console.error('student SW failed', e));
+      }
+      </script>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const mobileBtn = document.querySelector('.mobile-menu-btn');
+          const mobileNav = document.getElementById('mobile-nav');
+          const overlay = document.querySelector('.mobile-overlay');
+          const closeBtn = document.querySelector('.mobile-close-btn');
+          const hamburger = document.querySelector('.hamburger');
+        
+          const openMenu = () => {
+            mobileNav.classList.add('active');
+            mobileNav.setAttribute('aria-hidden', 'false');
+            overlay.classList.add('active');
+            mobileBtn.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+          };
+        
+          const closeMenu = () => {
+            mobileNav.classList.remove('active');
+            mobileNav.setAttribute('aria-hidden', 'true');
+            overlay.classList.remove('active');
+            mobileBtn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+          };
+        
+          mobileBtn.addEventListener('click', openMenu);
+          closeBtn.addEventListener('click', closeMenu);
+          overlay.addEventListener('click', closeMenu);
+        
+          // Close on Escape key
+          document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+              closeMenu();
+            }
+          });
+        });
+        </script>
+      
+      
   </body>
 </html>

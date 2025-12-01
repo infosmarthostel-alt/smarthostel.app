@@ -5,44 +5,55 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Rooms — Admin</title>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
-    <link
-      rel="stylesheet"
-      as="style"
-      onload="this.rel='stylesheet'"
-      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B700%3B900"
-    />
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans:wght@400;500;700;900&family=Public+Sans:wght@400;500;700;900" />
     <style>
       :root{--bg:#f5f6fb;--card:#fff;--muted:#6b7280;--text:#0f172a;--border:#e6e9ef;--accent:#0f172a;--radius:12px;font-family:"Public Sans","Noto Sans",system-ui,Arial}
-      *{box-sizing:border-box}
-      body{margin:0;background:var(--bg);color:var(--text);font-family:inherit}
+      *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:inherit}
       header{background:#fff;border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
       header h1{margin:0;font-size:18px}
       .container{max-width:1200px;margin:20px auto;padding:18px}
-
       .topbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
-      .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;border:0}
+      .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;border:0;font-size:14px}
       .ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
       .filters{margin-left:auto;display:flex;gap:8px;align-items:center}
-      input[type="text"], select{padding:8px;border-radius:8px;border:1px solid var(--border)}
-
-      .table-wrap{background:var(--card);border-radius:12px;overflow:auto;border:1px solid var(--border)}
+      input[type="text"], select{padding:8px 10px;border-radius:8px;border:1px solid var(--border);font-size:14px}
+      .table-wrap{background:var(--card);border-radius:var(--radius);overflow:auto;border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,0.1)}
       table{width:100%;border-collapse:collapse;min-width:1100px}
-      thead th{background:#fbfdff;text-align:left;padding:12px;border-bottom:1px solid var(--border);font-weight:700}
-      tbody td{padding:12px;border-bottom:1px solid #f1f4f8;vertical-align:top}
-
+      thead th{background:#fbfdff;text-align:left;padding:14px 12px;border-bottom:2px solid var(--border);font-weight:700;font-size:14px}
+      tbody td{padding:12px;border-bottom:1px solid #f1f4f8;vertical-align:middle}
       .thumb{width:96px;height:64px;object-fit:cover;border-radius:6px;border:1px solid var(--border)}
-      .students-col{max-width:200px}
-      .muted{color:var(--muted)}
-
-      .empty{padding:30px;text-align:center;color:var(--muted)}
-
-      /* responsive */
-      @media (max-width:1100px){
-        table{min-width:900px}
+      .students-col{max-width:220px}
+      .muted{color:var(--muted);font-size:13px}
+      a{text-decoration:none;color:inherit}
+      .std-ic {
+        padding: 6px 10px;
+        border: 1px solid #d1d5db;
+        margin-bottom: 4px;
+        border-radius: 12px;
+        background: #f9fafb;
+        text-align: center;
+        font-size: 13px;
       }
+      .status-available    { background:#dcfce7; color:#166534; }
+      .status-partial      { background:#fef3c7; color:#92400e; }
+      .status-occupied     { background:#fee2e2; color:#991b1b; }
+      .status-maintenance  { background:#e0e7ff; color:#4338ca; }
+      .status-unknown      { background:#f3f4f6; color:#374151; }
+      .status-badge {
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+      }
+      .std-ic a:hover {text-decoration: underline;}
+      .empty{padding:40px;text-align:center;color:var(--muted);font-size:15px}
+      .pagination{margin-top:20px;display:flex;justify-content:center;gap:10px;align-items:center;flex-wrap:wrap}
+      @media (max-width:1100px){table{min-width:900px}}
       @media (max-width:760px){
         .container{padding:12px}
-        .filters{width:100%;margin-top:8px}
+        .filters{width:100%;margin-top:12px;justify-content:flex-start}
+        .topbar{flex-direction:column;align-items:stretch}
       }
     </style>
   </head>
@@ -50,29 +61,33 @@
     <header>
       <h1>Rooms</h1>
       <div>
-        <a class="btn" href="{% url 'create_room' %}">Create new room</a>
+        <a class="btn" href="{% url 'create_room' %}">+ Create new room</a>
       </div>
     </header>
 
     <main class="container">
       <div class="topbar">
-        <div class="muted">Rooms overview</div>
+        <div class="muted">Rooms overview • {{ page_obj.paginator.count }} total</div>
         <div class="filters">
-          <form method="get" style="display:flex;gap:8px;align-items:center">
-            <input type="text" name="q" placeholder="search room / block" value="{{ search|default:'' }}">
+          <form method="get" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="text" name="q" placeholder="Search room / block" value="{{ search }}">
             <select name="status">
               <option value="">All status</option>
-              {% for v,label in status_choices %}
-                <option value="{{ v }}" {% if selected_status == v %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
+              <option value="Available" {% if selected_status == 'Available' %}selected{% endif %}>Available</option>
+              <option value="Partially Occupied" {% if selected_status == 'Partially Occupied' %}selected{% endif %}>Partially Occupied</option>
+              <option value="Occupied" {% if selected_status == 'Occupied' %}selected{% endif %}>Occupied</option>
+              <option value="Maintenance" {% if selected_status == 'Maintenance' %}selected{% endif %}>Maintenance</option>
             </select>
             <button class="btn" type="submit">Filter</button>
+            {% if request.GET.q or request.GET.status %}
+              <a href="{% url 'rooms_list' %}" class="ghost btn" style="padding:8px 10px;font-size:13px">Clear</a>
+            {% endif %}
           </form>
         </div>
       </div>
 
       <div class="table-wrap">
-        <table role="table" aria-label="rooms table">
+        <table role="table" aria-label="Rooms table">
           <thead>
             <tr>
               <th>Room</th>
@@ -84,52 +99,101 @@
               <th>Rent</th>
               <th>Status</th>
               <th>Image</th>
-              <th>Created At</th>
+              <th>Created</th>
               <th>Students</th>
             </tr>
           </thead>
           <tbody>
-            {% for info in rooms_info %}
+            {% for room in rooms_info %}
               <tr>
-                <td><a href="{% url 'room_detail' info.room.room_id %}">{{ info.room.room_number }}</a></td>
-                <td>{{ info.room.block_number }}</td>
-                <td>{{ info.room.type }}</td>
-                <td>{{ info.room.capacity }}</td>
-                <td>{{ info.room.occupied }}</td>
-                <td>{{ info.occupancy_pct }}%</td>
-                <td>₹{{ info.room.room_rent }}</td>
-                <td>{{ info.room.status }}</td>
                 <td>
-                  {% if info.room.image %}
-                    <a href="{{ info.room.image.url }}" target="_blank"><img class="thumb" src="{{ info.room.image.url }}" alt="Room {{ info.room.room_number }}"></a>
+                  {% if room.room_id %}
+                    <a href="{% url 'room_detail' room.room_id %}"><strong>{{ room.room_number }}</strong></a>
+                  {% else %}
+                    <span style="color:red;">{{ room.room_number }} (no ID)</span>
+                  {% endif %}
+                </td>
+                <td>{{ room.block_number }}</td>
+                <td>{{ room.type }}</td>
+                <td>{{ room.capacity }}</td>
+                <td>{{ room.occupied }}</td>
+                <td>
+                  <strong>
+                    {% if room.occupancy_pct >= 80 %}
+                      <span style="color:#dc2626">{{ room.occupancy_pct }}%</span>
+                    {% elif room.occupancy_pct >= 50 %}
+                      <span style="color:#f59e0b">{{ room.occupancy_pct }}%</span>
+                    {% else %}
+                      <span style="color:#16a34a">{{ room.occupancy_pct }}%</span>
+                    {% endif %}
+                  </strong>
+                </td>
+                <td>₹{{ room.room_rent }}</td>
+                <td>
+                  <span class="status-badge
+                    {% if room.calculated_status == 'Available' %}status-available
+                    {% elif room.calculated_status == 'Partially Occupied' %}status-partial
+                    {% elif room.calculated_status == 'Occupied' %}status-occupied
+                    {% elif room.calculated_status == 'Maintenance' %}status-maintenance
+                    {% else %}status-unknown{% endif %}">
+                    {{ room.calculated_status }}
+                  </span>
+                </td>
+                <td>
+                  {% if room.image %}
+                    <a href="{{ room.image.url }}" target="_blank">
+                      <img class="thumb" src="{{ room.image.url }}" alt="{{ room.room_number }}">
+                    </a>
                   {% else %}
                     <span class="muted">No image</span>
                   {% endif %}
                 </td>
-                <td>{{ info.room.created_at|date:"Y-m-d H:i" }}</td>
+                <td>{{ room.created_at|date:"M d, Y" }}</td>
                 <td class="students-col">
-                  {% for s in info.students %}
-                    <div><a href="{% url 'student_detail' s.student_id %}">{{ s.name }}</a> <span class="muted">({{ s.student_id }})</span></div>
+                  {% for student in room.students_list %}
+                    <div class="std-ic">
+                      {% if student.student_id %}
+                        <a href="{% url 'student_detail' student.student_id %}">{{ student.name }}</a>
+                      {% else %}
+                        {{ student.name }} (no ID)
+                      {% endif %}
+                    </div>
                   {% empty %}
-                    -
+                    <span class="muted">—</span>
                   {% endfor %}
                 </td>
               </tr>
             {% empty %}
-              <tr><td colspan="11" class="empty">No rooms</td></tr>
+              <tr>
+                <td colspan="11" class="empty">
+                  {% if request.GET.q or request.GET.status %}
+                    No rooms match your filter.
+                  {% else %}
+                    No rooms have been created yet.
+                  {% endif %}
+                </td>
+              </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
 
-      {% if page_obj %}
-        <div style="display:flex;justify-content:center;margin-top:12px;gap:8px;align-items:center">
-          {% if page_obj.has_previous %}<a class="btn ghost" href="?page={{ page_obj.previous_page_number }}">Prev</a>{% endif %}
-          <span class="muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-          {% if page_obj.has_next %}<a class="btn ghost" href="?page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+      <!-- Pagination -->
+      {% if page_obj.paginator.count > 25 %}
+        <div class="pagination">
+          {% if page_obj.has_previous %}
+            <a class="btn ghost" href="?{% if request.GET|length > 0 and request.GET.page %}page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode|cut:'&page='|cut:'page=' }}{% else %}page={{ page_obj.previous_page_number }}{% endif %}">Previous</a>
+          {% endif %}
+
+          <span class="muted">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+
+          {% if page_obj.has_next %}
+            <a class="btn ghost" href="?{% if request.GET|length > 0 and request.GET.page %}page={{ page_obj.next_page_number }}&{{ request.GET.urlencode|cut:'&page='|cut:'page=' }}{% else %}page={{ page_obj.next_page_number }}{% endif %}">Next</a>
+          {% endif %}
         </div>
       {% endif %}
-
     </main>
   </body>
 </html>

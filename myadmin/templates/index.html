@@ -1,20 +1,18 @@
-
-
-
-
-
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
     <link rel="icon" type="image/png" href="/media/favicon.png">
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Public+Sans%3Awght%40400%3B500%3B700%3B900"
+      href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans:wght@400;500;700;900&family=Public+Sans:wght@400;500;700;900"
     />
+
     <title>SmartHostel - Home</title>
     <style>
+
       *, *::before, *::after { box-sizing: border-box; }
       html, body { height: 100%; margin: 0; padding: 0; }
       body {
@@ -34,23 +32,26 @@
       .layout-container {
         display: flex;
         flex-direction: column;
-        flex: 1 1 auto;
-        height: 100%;
+        flex: 1;
       }
 
+      /* ==================== HEADER ==================== */
       header.app-header {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 12px 40px;
         border-bottom: 1px solid #f0f2f4;
-        gap: 16px;
+        background: #fff;
+        z-index: 1000;
       }
 
       .brand {
         display: flex;
         align-items: center;
         gap: 7px;
+        z-index: 1001;
       }
       .brand svg { width: 30px; height: 30px; }
       .brand h2 {
@@ -60,25 +61,97 @@
         letter-spacing: -0.3px;
       }
 
-
+      /* Desktop Navigation */
       .nav {
         display: flex;
         align-items: center;
-        gap: 22px;
+        gap: 28px;
       }
       .nav a {
         color: #111418;
         font-size: 14px;
         font-weight: 500;
         text-decoration: none;
+        transition: color 0.2s;
+      }
+      .nav a:hover { color: #1773cf; }
+
+      /* Hamburger Button */
+      .menu-toggle {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        z-index: 1001;
+      }
+      .menu-toggle span {
+        width: 26px;
+        height: 3px;
+        background: #111418;
+        border-radius: 3px;
+        transition: all 0.3s ease;
       }
 
-  
+      .mobile-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(12px);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        transform: translateX(100%);
+        transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+        z-index: 999;
+        padding-top: 70px;
+    }
+      .mobile-menu.open {
+        transform: translateX(0);
+      }
+      .mobile-menu a {
+        font-size: 16px;
+        font-weight: 700;
+        color: #111418;
+        text-decoration: none;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.5s ease;
+        border-bottom: 1px solid #a9a9a9;
+        display: flex;
+        width: 100%;
+        padding: 14px;
+        justify-content: flex-start;
+    }
+      .mobile-menu.open a {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .mobile-menu a:hover { color: #1773cf; }
+
+      /* Hamburger to X animation */
+      .menu-toggle.open span:nth-child(1) {
+        transform: rotate(45deg) translate(7px, 7px);
+      }
+      .menu-toggle.open span:nth-child(2) {
+        opacity: 0;
+      }
+      .menu-toggle.open span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -7px);
+      }
+
+      /* ==================== MAIN LAYOUT ==================== */
       .page-inner {
         display: flex;
         justify-content: center;
         padding: 20px 40px;
-        flex: 1 1 auto;
+        flex: 1;
       }
       .content {
         width: 100%;
@@ -87,9 +160,7 @@
         flex-direction: column;
       }
 
-      .hero-wrap {
-        margin: 0;
-      }
+      .hero-wrap { margin: 0; }
       .hero {
         display: flex;
         align-items: center;
@@ -103,9 +174,9 @@
         background-position: center;
         background-repeat: no-repeat;
         color: #fff;
+        text-align: center;
       }
       .hero .title {
-        text-align: center;
         font-weight: 900;
         font-size: 32px;
         line-height: 1.05;
@@ -113,15 +184,13 @@
       }
       .hero .subtitle {
         max-width: 900px;
-        text-align: center;
         font-size: 14px;
         margin: 0;
       }
       .btn-primary {
         min-width: 84px;
-        max-width: 480px;
         height: 40px;
-        padding: 0 16px;
+        padding: 0 20px;
         border-radius: 8px;
         background: #1773cf;
         color: #fff;
@@ -129,9 +198,10 @@
         font-size: 14px;
         border: none;
         cursor: pointer;
+        transition: background 0.2s;
       }
+      .btn-primary:hover { background: #1468b8; }
 
-   
       .section-title {
         font-size: 22px;
         font-weight: 700;
@@ -140,7 +210,7 @@
       .section-desc {
         font-size: 15px;
         margin: 4px 4px 12px;
-        color: #111418;
+        color: #333;
       }
 
       .card-grid {
@@ -170,7 +240,6 @@
         margin: 0;
         font-size: 14px;
         font-weight: 700;
-        color: #111418;
       }
 
       .room-thumb {
@@ -181,7 +250,6 @@
         background-size: cover;
         flex-shrink: 0;
       }
-
 
       .gallery {
         display: grid;
@@ -197,11 +265,16 @@
         background-size: cover;
       }
 
-   
       footer.app-footer {
         display: flex;
         justify-content: center;
-        padding: 24px 0;
+        padding: 32px 0;
+        background: #f8f9fa;
+      }
+      @media (max-width: 767px) {
+        footer.app-footer {
+          display: none;
+        }
       }
       .footer-inner {
         width: 100%;
@@ -217,30 +290,43 @@
         flex-wrap: wrap;
         justify-content: center;
       }
-      .social {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-      }
+      .social { display: flex; gap: 16px; }
       .caption {
         color: #637588;
         font-size: 14px;
         margin: 0;
       }
 
+      @media (max-width: 900px) {
+        header.app-header { padding: 14px 24px; }
+        .nav { display: none; }
+        .menu-toggle { display: flex; }
+        footer{ display: none; }
+        
+      }
+
+      @media (max-width: 480px) {
+        .brand h2 { font-size: 17px; }
+        .hero { min-height: 380px; padding: 32px 20px; }
+        .hero .title { font-size: 34px; }
+        .page-inner { padding: 20px 20px; }
+        footer{ display: none; }
+        
+      }
 
       @media (min-width: 480px) {
         .hero { min-height: 420px; padding: 28px; border-radius: 12px; }
         .hero .title { font-size: 40px; }
         .hero .subtitle { font-size: 16px; }
-        .btn-primary { height: 48px; font-size: 16px; padding: 0 20px; }
+        .btn-primary { height: 48px; font-size: 16px; padding: 0 24px; }
       }
+
       @media (min-width: 900px) {
         header.app-header { padding: 14px 80px; }
         .page-inner { padding: 32px 40px; }
+
       }
 
-      /* small utility tweaks to mimic the original */
       .text-center { text-align: center; }
       .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     </style>
@@ -249,12 +335,13 @@
   <body>
     <div class="app-root">
       <div class="layout-container">
+
+        <!-- HEADER WITH PROFESSIONAL MOBILE MENU -->
         <header class="app-header">
           <div class="brand">
             <div aria-hidden="true">
-
               <svg viewBox="0 -6.83 55.484 55.484" xmlns="http://www.w3.org/2000/svg">
-      
+
                 <g transform="translate(-819.325 -209.09)">
                 
                 <path d="M830.341,217.538a19.3,19.3,0,0,0-4.606,12.57,19.006,19.006,0,0,0,14.6,18.648" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
@@ -268,42 +355,58 @@
                 <path d="M826.109,220.822a6.322,6.322,0,0,1,.1,4.392.236.236,0,0,1-.292.153,6.046,6.046,0,0,1-3.416-2.655,6.322,6.322,0,0,1-.1-4.392.236.236,0,0,1,.292-.153A6.046,6.046,0,0,1,826.109,220.822Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
                 
                 <path d="M833.948,214.106a6.091,6.091,0,0,1-3.1,3.037.234.234,0,0,1-.307-.118,6.317,6.317,0,0,1-.386-4.375,6.085,6.085,0,0,1,3.1-3.037.233.233,0,0,1,.307.118A6.31,6.31,0,0,1,833.948,214.106Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-                
                 <path d="M863.793,217.538a19.3,19.3,0,0,1,4.606,12.57,19.006,19.006,0,0,1-14.6,18.648" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-                
                 <path d="M861.082,246.26a5.987,5.987,0,0,0-3.847,1.94.246.246,0,0,0,0,.335,4.866,4.866,0,0,0,7.725-.067.246.246,0,0,0,0-.336A5.974,5.974,0,0,0,861.082,246.26Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-                
                 <path d="M867.678,239.3a6.125,6.125,0,0,0-2.947,3.19.244.244,0,0,0,.116.314,5.9,5.9,0,0,0,4.272.373,6.127,6.127,0,0,0,2.948-3.19.245.245,0,0,0-.117-.314A5.9,5.9,0,0,0,867.678,239.3Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-                
                 <path d="M869.9,230.16a6.239,6.239,0,0,0-1.955,3.909.241.241,0,0,0,.2.268,5.9,5.9,0,0,0,4.2-.871,6.241,6.241,0,0,0,1.955-3.91.242.242,0,0,0-.2-.268A5.907,5.907,0,0,0,869.9,230.16Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-                
                 <path d="M868.025,220.822a6.322,6.322,0,0,0-.1,4.392.236.236,0,0,0,.292.153,6.046,6.046,0,0,0,3.416-2.655,6.322,6.322,0,0,0,.1-4.392.236.236,0,0,0-.292-.153A6.042,6.042,0,0,0,868.025,220.822Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-                
                 <path d="M860.186,214.106a6.091,6.091,0,0,0,3.1,3.037.234.234,0,0,0,.307-.118,6.317,6.317,0,0,0,.386-4.375,6.086,6.086,0,0,0-3.1-3.037.233.233,0,0,0-.307.118A6.311,6.311,0,0,0,860.186,214.106Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-                
                 <path d="M847.238,218.546l-9.83,10.137c-.1.1.069.236.069.378v10.352c0,.3-.208.947.088.947h19.56c.3,0,.352-.651.352-.947V229.061c0-.142.036-.277-.064-.378l-10.007-10.137C847.2,218.335,847.447,218.335,847.238,218.546Z" fill="none" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"/>
-                
                 <rect width="6" height="7" rx="0.547" transform="translate(844.477 232.36)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                
                 <line y1="12.336" x2="12.564" transform="translate(834.674 218.546)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                
                 <line x1="12.564" y1="12.336" transform="translate(847.301 218.546)" stroke-width="3" stroke="#231f20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                
                 </g>
                 
                 </svg>
             </div>
-            <h2>Hostel Hostel - Register</h2>
+            <h2>SmartHostel - Home</h2>
           </div>
 
-          <div class="nav">
+          <!-- Desktop Nav -->
+          <nav class="nav" aria-label="Main navigation">
             <a href="{% url 'home' %}">Home</a>
             <a href="#">About</a>
             <a href="#">Contact</a>
             <a href="{% url 'login_return' %}">Student Login</a>
             <a href="{% url 'student_register' %}">Register</a>
-          </div>
+          </nav>
+
+          <!-- Hamburger Button -->
+          <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
         </header>
+
+        <!-- Mobile Menu Overlay -->
+        <nav class="mobile-menu" id="mobile-menu" aria-hidden>
+          <a href="{% url 'home' %}">Home</a>
+          <a href="#">About</a>
+          <a href="#">Contact</a>
+          <a href="{% url 'login_return' %}">Student Login</a>
+          <a href="{% url 'student_register' %}">Register</a>
+        </nav>
+        </header>
+
+        <nav class="mobile-menu" id="mobile-menu">
+          <a href="{% url 'home' %}">Home</a>
+          <a href="#">About</a>
+          <a href="#">Contact</a>
+          <a href="{% url 'login_return' %}">Student Login</a>
+          <a href="{% url 'student_register' %}">Register</a>
+        </nav>
+
 
         <main class="page-inner">
           <div class="content">
@@ -427,10 +530,30 @@
               </a>
             </div>
 
-            <p class="caption">© 2024 Hostel Management. All rights reserved.</p>
+            <p class="caption">© 2025 SmartHostel. All rights reserved.</p>
           </div>
         </footer>
       </div>
     </div>
+    <script>
+      const toggle = document.querySelector('.menu-toggle');
+      const menu = document.getElementById('mobile-menu');
+
+      toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.classList.toggle('open');
+        menu.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', !expanded);
+      });
+
+      // Close menu when clicking a link
+      menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          toggle.classList.remove('open');
+          menu.classList.remove('open');
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    </script>
   </body>
 </html>

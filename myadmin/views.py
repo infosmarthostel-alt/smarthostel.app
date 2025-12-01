@@ -22,70 +22,12 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.http import JsonResponse
-
-def health_check(request):
-    return JsonResponse({"status": "ok"})
-
-def index(request):
-    return render(request, "index.html")
-
-def login_return(request):
-    return render(request,"login.html")
-
-def logout(request):
-    request.session['lid'] = 'out'
-    request.session['sid'] = 'out'
-    return HttpResponse("<script>alert('logout');window.location='/'</script>")
-
-def login_post(request):
-    username = request.POST.get('textfield', '').strip()
-    password = request.POST.get('textfield2', '')
-
-  
-    try:
-        res = login.objects.get(username=username)
-    except login.DoesNotExist:
-        return HttpResponse("<script>alert('wrong password or username');window.location='/login_return'</script>")
-
-    ok = False
-    try:
-        ok = check_password(password, res.password)
-    except Exception:
-        ok = False
-
-    if not ok and password == res.password:
-     
-        ok = True
-
-    if not ok:
-        return HttpResponse("<script>alert('wrong password or username');window.location='/login_return'</script>")
-
-    res.last_login = timezone.now()
-    res.save(update_fields=['last_login'])
-
-    # request.session['lid'] = res.id
-    if res.usertype == "admin":
-        request.session['lid'] = res.id
-        return redirect('/admin/dashboard/')
-    elif res.usertype == "student":
-        request.session['sid'] = res.id
-        return redirect('/s_home')
-    elif res.usertype == "blocked":
-        return HttpResponse("<script>alert('you are blocked');window.location='/'</script>")
-    else:
-        return HttpResponse("<script>alert('wrong usertype');window.location='/'</script>")
-
-
-# views_admin.py
 from decimal import Decimal
 from datetime import date, datetime
 import calendar
-
 from student.models import Student,Fee,PaymentTransaction
 from room.models import Room
 from .models import  login as LoginModel
-
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
@@ -94,6 +36,63 @@ from django.utils import timezone
 from decimal import Decimal
 import csv
 from datetime import date, timedelta
+from django.db import models
+
+def health_check(request):
+    return JsonResponse({"status": "ok"})
+
+def index(request):
+
+    if request.session.get('sid') and request.session.get('sid') != 'out':
+        return redirect('s_home')  
+    return render(request, "index.html")
+
+def login_return(request):
+    return render(request,"login.html")
+
+def logout(request):
+    request.session['lid'] = 'out'
+    request.session['sid'] = 'out'
+    return redirect('/')
+
+def login_post(request):
+    username = request.POST.get('textfield', '').strip()
+    password = request.POST.get('textfield2', '')
+
+    try:
+        user = login.objects.get(username=username)
+    except login.DoesNotExist:
+        messages.error(request, "Invalid username or password.")
+        return redirect('/login_return')  # This is your login page URL
+
+    # Check password
+    if not check_password(password, user.password) and password != user.password:
+        messages.error(request, "Invalid username or password.")
+        return redirect('/login_return')
+
+    # Success login
+    user.last_login = timezone.now()
+    user.save(update_fields=['last_login'])
+
+    if user.usertype == "admin":
+        request.session['lid'] = user.id
+        messages.success(request, "Welcome back, Admin!")
+        return redirect('/admin/dashboard/')
+        
+    elif user.usertype == "student":
+        request.session['sid'] = user.id
+        return redirect('/s_home')
+        
+    elif user.usertype == "blocked":
+        messages.error(request, "Your account is blocked. Contact admin.")
+        return redirect('/login_return')
+        
+    else:
+        messages.error(request, "Invalid user type.")
+        return redirect('/login_return')
+
+
+
 
 
 # Decorator: simple admin check (adjust to your auth)
@@ -319,21 +318,74 @@ def toggle_block_student(request, student_id):
         return JsonResponse({'status': status})
     return redirect(reverse('students_list'))
 
+from django.db.models import Q, F, Case, When, Value, IntegerField
+from django.core.paginator import Paginator
+from django.shortcuts import render
 
 @admin_required
 def rooms_list(request):
-    rooms = Room.objects.all().order_by('block_number', 'room_number')
-    # annotate occupancy %
-    rooms_info = []
-    for r in rooms:
-        capacity = r.capacity or 1
-        occ = r.occupied or 0
-        pct = int((occ / capacity) * 100)
-        students = r.students.all()  # related_name='students' on Student model
-        rooms_info.append({'room': r, 'occupancy_pct': pct, 'students': students})
-    context = {'rooms_info': rooms_info}
-    return render(request, 'rooms_list.html', context)
+    rooms_qs = Room.objects.all().order_by('block_number', 'room_number')
 
+    # Filters
+    search_query = request.GET.get('q', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+
+    if search_query:
+        rooms_qs = rooms_qs.filter(
+            Q(room_number__icontains=search_query) |
+            Q(block_number__icontains=search_query)
+        )
+
+    # Annotate occupancy % and smart status
+    rooms_qs = rooms_qs.annotate(
+        occupancy_pct=Case(
+            When(capacity=0, then=Value(0)),
+            default=(F('occupied') * 100) / F('capacity'),
+            output_field=IntegerField()
+        ),
+        calculated_status=Case(
+            When(status='Maintenance', then=Value('Maintenance')),  # manual override
+            When(occupied=0, then=Value('Available')),
+            When(occupied=F('capacity'), then=Value('Occupied')),
+            default=Value('Partially Occupied'),
+            output_field=models.CharField(max_length=20)
+        )
+    )
+
+    # Optional: filter by calculated status (if user selects from dropdown)
+    if status_filter:
+        if status_filter == 'Partially Occupied':
+            rooms_qs = rooms_qs.filter(occupied__gt=0, occupied__lt=F('capacity'))
+        elif status_filter == 'Available':
+            rooms_qs = rooms_qs.filter(occupied=0, status__ne='Maintenance')
+        elif status_filter == 'Occupied':
+            rooms_qs = rooms_qs.filter(occupied=F('capacity'), status__ne='Maintenance')
+        elif status_filter == 'Maintenance':
+            rooms_qs = rooms_qs.filter(status='Maintenance')
+
+    # Pagination
+    paginator = Paginator(rooms_qs, 25)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Attach students
+    for room in page_obj:
+        room.students_list = room.students.all()
+
+    context = {
+        'page_obj': page_obj,
+        'rooms_info': page_obj,
+        'search': search_query,
+        'selected_status': status_filter,
+        'status_choices': [
+            ('', 'All status'),
+            ('Available', 'Available'),
+            ('Partially Occupied', 'Partially Occupied'),
+            ('Occupied', 'Occupied'),
+            ('Maintenance', 'Maintenance'),
+        ],
+    }
+    return render(request, 'rooms_list.html', context)
 
 @admin_required
 def room_detail(request, room_id):
