@@ -53,7 +53,7 @@ def login_return(request):
 def logout(request):
     request.session['lid'] = 'out'
     request.session['sid'] = 'out'
-    return redirect('/')
+    return redirect('login_return')
 
 def login_post(request):
     username = request.POST.get('textfield', '').strip()
@@ -63,14 +63,11 @@ def login_post(request):
         user = login.objects.get(username=username)
     except login.DoesNotExist:
         messages.error(request, "Invalid username or password.")
-        return redirect('/login_return')  # This is your login page URL
+        return redirect('/login_return')  
 
-    # Check password
     if not check_password(password, user.password) and password != user.password:
         messages.error(request, "Invalid username or password.")
         return redirect('/login_return')
-
-    # Success login
     user.last_login = timezone.now()
     user.save(update_fields=['last_login'])
 
@@ -814,15 +811,12 @@ def send_email(to_email: str, subject: str, body: str):
         
         
 
-OTP_TTL_MINUTES = 10  # OTP expiry
+OTP_TTL_MINUTES = 10 
 
 @require_http_methods(["GET", "POST"])
 def forgot_password(request):
     if request.method == "GET":
-        # Render the forgot password form
         return render(request, "forgot_password.html")
-
-    # POST: process the email and send OTP
     email = request.POST.get("email", "").strip()
     if not email:
         messages.error(request, "Please enter an email address.")
@@ -832,21 +826,16 @@ def forgot_password(request):
     if not student:
         messages.error(request, "User not found.")
         return redirect("forgot_password")
-
-    # Generate OTP and store in session with creation time and email
     otp = f"{random.randint(100000, 999999)}"
     request.session["otp"] = otp
     request.session["otp_email"] = email
-    # store ISO timestamp for JSON-serializable
     request.session["otp_created_at"] = timezone.now().isoformat()
 
-    # Send OTP email (ensure EMAIL settings are configured)
     subject = "OTP for Password Reset"
     body = f"Your OTP is {otp}. It is valid for {OTP_TTL_MINUTES} minutes."
     try:
         send_email(email, subject, body)
     except Exception:
-        # Log in real app; here we notify user
         messages.error(request, "Failed to send OTP email. Please try again later.")
         return redirect("forgot_password")
 
@@ -858,7 +847,6 @@ def verify_otp(request):
     if request.method == "GET":
         return render(request, "verify_otp.html")
 
-    # POST: check provided otp
     submitted_otp = (request.POST.get("otp") or "").strip()
     stored_otp = request.session.get("otp")
     created_iso = request.session.get("otp_created_at")
@@ -867,7 +855,6 @@ def verify_otp(request):
         messages.error(request, "Session expired or no OTP found. Please request a new OTP.")
         return redirect("forgot_password")
 
-    # check expiry
     try:
         created_at = timezone.datetime.fromisoformat(created_iso)
         if timezone.is_naive(created_at):
@@ -887,8 +874,6 @@ def verify_otp(request):
         messages.error(request, "Invalid OTP. Please try again.")
         return redirect("verify_otp")
 
-    # OTP correct -> allow reset
-    # Optionally mark in session that verification passed
     request.session["otp_verified"] = True
     return redirect("reset_password")
 
@@ -896,13 +881,12 @@ def verify_otp(request):
 @require_http_methods(["GET", "POST"])
 def reset_password(request):
     if request.method == "GET":
-        # ensure user passed OTP verification
+   
         if not request.session.get("otp_verified"):
             messages.error(request, "You must verify the OTP first.")
             return redirect("forgot_password")
         return render(request, "reset_password.html")
 
-    # POST: save new password
     password = request.POST.get("password", "")
     confirm_password = request.POST.get("confirm_password", "")
 
@@ -924,16 +908,13 @@ def reset_password(request):
         messages.error(request, "User not found or no login associated.")
         return redirect("forgot_password")
 
-    # Hash the password and save onto the related login model
     user_login = student.login
-    user_login.password = make_password(password)  # store hashed password
+    user_login.password = make_password(password)
     user_login.save()
 
-    # Clear OTP-related session data
     for k in ("otp", "otp_email", "otp_created_at", "otp_verified"):
         request.session.pop(k, None)
 
-    # Notify user
     subject = "Password Changed Successfully"
     body = "Your password has been successfully updated. You can now log in with your new password."
     try:
@@ -952,9 +933,7 @@ def reset_password(request):
 @admin_required
 @require_http_methods(["GET"])
 def admin_complaints_list(request):
-    """
-    Admin view to list all complaints. Supports optional ?status= filter and ?q= search.
-    """
+
     qs = Complaint.objects.select_related('student', 'room').all()
 
     status = request.GET.get('status')
@@ -982,9 +961,7 @@ def admin_complaints_list(request):
 @admin_required
 @require_http_methods(["GET", "POST"])
 def admin_complaint_detail(request, pk):
-    """
-    Admin view for a single complaint. Admin can change status and add a response.
-    """
+
     complaint = get_object_or_404(Complaint, pk=pk)
 
     if request.method == 'POST':

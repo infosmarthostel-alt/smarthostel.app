@@ -15,13 +15,14 @@ from django.db.models import Count
 from myadmin.models import Complaint, Meal, Notification, Weekday
 from .models import Student, Room, login as LoginModel
 from django.db import models
+
 def s_home(request):
     if request.session.get('sid') == 'out':
         return HttpResponse("<script>alert('please login');window.location='/'</script>")
 
     student = _get_student_from_session(request)
     if not student:
-        # handle case where student is not found (optional)
+    
         return HttpResponse("<script>alert('Session error');window.location='/'</script>")
 
     notifications = Notification.objects.filter(is_active=True).order_by('-created_at')
@@ -42,24 +43,21 @@ def s_home(request):
     roommates_qs = (room.students.exclude(student_id=student.student_id).order_by('name')
                     if room else Student.objects.none())
 
-    # ----------- Complaint statistics for this student -----------
+
     complaints_qs = Complaint.objects.filter(student=student)
 
     total_complaints = complaints_qs.count()
 
-    # Optional: breakdown by status – very useful on the dashboard
     complaints_by_status = dict(
         complaints_qs.values('status')
         .annotate(count=models.Count('status'))
         .values_list('status', 'count')
     )
 
-    # If you prefer direct counts:
     open_complaints = complaints_qs.filter(status='open').count()
     in_progress_complaints = complaints_qs.filter(status='in_progress').count()
     resolved_complaints = complaints_qs.filter(status='resolved').count()
 
-    # -----------------------------------------------------------
 
     return render(request, "home.html", {
         'student': student,
@@ -74,7 +72,7 @@ def s_home(request):
         'open_complaints': open_complaints,
         'in_progress_complaints': in_progress_complaints,
         'resolved_complaints': resolved_complaints,
-        'complaints_by_status': complaints_by_status,  # e.g., {'open': 2, 'resolved': 5}
+        'complaints_by_status': complaints_by_status,  
     })
 
 def room_programme_counts(request):
@@ -91,7 +89,6 @@ def room_programme_counts(request):
     else:
         data = {}
 
-    # ensure every room key exists (0 if none)
     room_ids = Room.objects.values_list('pk', flat=True)
     for rid in room_ids:
         data.setdefault(str(rid), 0)
@@ -127,7 +124,6 @@ def student_register(request):
         profile_pic_file = request.FILES.get('profile')
         id_proof_file = request.FILES.get('id_proof')
 
-        # Basic validation
         if not name:
             messages.error(request, 'Name is required.')
             return render(request, 'student_register.html', {
@@ -144,7 +140,7 @@ def student_register(request):
                 'post': request.POST,
             })
 
-        # If email provided, don't allow duplicate usernames
+
         login_obj = None
         if email:
             if LoginModel.objects.filter(username=email).exists():
@@ -160,7 +156,7 @@ def student_register(request):
                     'post': request.POST,
                 })
 
-            # create login object and store hashed password
+            
             hashed = make_password(password)
             login_obj = LoginModel.objects.create(
                 username=email,
@@ -170,7 +166,6 @@ def student_register(request):
                 date_joined=timezone.now()
             )
 
-        # Create student (with or without room reservation)
         if preferred_room_id:
             try:
                 with transaction.atomic():
@@ -205,7 +200,7 @@ def student_register(request):
                     room.save()
 
                 messages.success(request, 'Registration successful and room reserved.')
-                return redirect('/')
+                return redirect('login_return')
             except Room.DoesNotExist:
                 messages.error(request, 'Selected room not found.')
             except ValueError:
@@ -230,7 +225,7 @@ def student_register(request):
             )
             student.save()
             messages.success(request, 'Registration successful (no room reserved).')
-            return redirect('/')
+            return redirect('login_return')
 
     return render(request, 'student_register.html', {
         'rooms': rooms_with_avail,
@@ -356,7 +351,7 @@ def change_password(request):
         elif new1 != new2:
             errors['new_password'] = "New passwords do not match."
 
-        # verify old password (supports hashed or plain)
+ 
         ok = False
         try:
             ok = check_password(old, login_obj.password)
@@ -386,7 +381,7 @@ def meals_today(request):
     student = _get_student_from_session(request)
     meals_qs = Meal.objects.filter(weekday=weekday_num).order_by('meal_type', 'meal_name')
 
-    # group by meal_type (dict: meal_type -> [Meal, ...])
+    
     grouped = defaultdict(list)
     for m in meals_qs:
         grouped[m.meal_type].append(m)
@@ -438,7 +433,7 @@ def student_submit_complaint(request):
                 complaint_type=complaint_type,
                 attachment=attachment
             )
-            # If student has a room assigned, always use it. Otherwise, allow free input
+       
             if student.room:
                 comp.room = student.room
             elif room:
