@@ -48,6 +48,8 @@ def index(request):
     return render(request, "index.html")
 
 def login_return(request):
+    if request.session.get('sid') and request.session.get('sid') != 'out':
+        return redirect('s_home') 
     return render(request,"login.html")
 
 def logout(request):
