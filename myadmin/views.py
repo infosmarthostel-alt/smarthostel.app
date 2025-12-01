@@ -56,8 +56,8 @@ def logout(request):
     return redirect('login_return')
 
 def login_post(request):
-    username = request.POST.get('textfield', '').strip()
-    password = request.POST.get('textfield2', '')
+    username = request.POST.get('username', '').strip()
+    password = request.POST.get('password', '')
 
     try:
         user = login.objects.get(username=username)
